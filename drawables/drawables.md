@@ -244,13 +244,185 @@ on view construction.
 What Makes Drawables Awesome:
 - Total Separation of View Logic from Code
 
-^ Making custom drawables, in a way, defeats this great separation of concerns that we established
-for 
+^ Making custom drawables, in a way, defeats this great separation of concerns that we already established
+as one of the main reasons to use them.  So why do we use custom drawables?
 
 ---
 
+![] (badge_drawable.png)
+
+^ Because they give you flexibility to do some awesome things.
+This is Jesse Hendrickson's Badge Drawable.
+
+---
+
+![left] (icon_drawables.png)
+![right](icon_documentation.png)
+
+^ Internally, we've been using them to turn fonts into icons.  Admittedly, it makes our code a bit 
+more verbose at times, but it saves time in other ways.
+
+---
+
+# The Drawable API
+
+---
+
+Methods that need to be overridden:
+
+- draw(Canvas canvas)
+
+^ Of course, you need to draw on the canvas for a drawable
+
+---
+
+Methods that need to be overridden:
+
+- draw(Canvas canvas)
+- getOpacity()
+
+
+---
+
+Methods that need to be overridden:
+
+- draw(Canvas canvas)
+- getOpacity()
+- getIntrinsicHeight/Width()
+
+---
+
+Methods that need to be overridden:
+
+- draw(Canvas canvas)
+- getOpacity()
+- getIntrinsicHeight/Width()
+- getMinimumHeight/Width()
+
+---
+
+Methods that need to be overridden:
+
+- draw(Canvas canvas)
+- getOpacity()
+- getIntrinsicHeight/Width()
+- getMinimumHeight/Width()
+- setBounds(Rect bounds)
+
+---
+
+Methods that need to be overridden:
+
+- draw(Canvas canvas)
+- getOpacity()
+- getIntrinsicHeight/Width()
+- getMinimumHeight/Width()
+- getConstantState() and mutate()
+
+---
+
+`draw(Canvas canvas)`
+
+
+^ Fairly self explanatory
+
+---
+
+`getOpacity()`
+
+
+---
+
+`getOpacity()`
+
+ColorDrawable.java
+
+````java
+    public int getOpacity() {
+        switch (mState.mUseColor >>> 24) {
+            case 255:
+                return PixelFormat.OPAQUE;
+            case 0:
+                return PixelFormat.TRANSPARENT;
+        }
+        return PixelFormat.TRANSLUCENT;
+    }
+````
+
+
+^ This is best explained by this snippet from Color Drawable.
+OPAQUE is anything without alpha
+If it's see through, pass back transparent
+if it's a combination, you're TRANSLUCENT.
+
+---
+
+`getIntrinsicHeight`
 
 
 
+^ The height of the drawable. 
+
+---
+
+`getIntrinsicHeight`
+
+ColorDrawable
+
+````java
+    /**
+     * Return the intrinsic height of the underlying drawable object. Returns
+     * -1 if it has no intrinsic height, such as with a solid color.
+     */
+    public int getIntrinsicHeight() {
+        return -1;
+    }
+````
+
+^ TODO: explain. The height of the drawable. 
+
+---
+
+`getMinimumHeight` 
+
+^ Like intrinsic, except minimum that can be passed back is 0, instead of -1 for intrinsic.
+
+---
+
+`getConstantState() and mutate()`
 
 
+^ TODO: Explain this
+
+---
+
+# Using Drawables with Views
+
+---
+
+# The Drawable Callback
+
+^ todo: jamie?
+
+---
+
+# Drawable Bounds
+
+^ Todo: lisa
+
+---
+
+# The Future of Drawable 
+
+^ Todo: (Go over Ripple Compat here?)
+
+---
+
+New Methods Added to RippleCompat
+
+- setHotspot()
+- setHotspotBounds()
+
+^ todo!!
+
+---
