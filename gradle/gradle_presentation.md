@@ -36,7 +36,10 @@ Which is true, Gradle is handy.  A lot handier than Ant.
 ## Why Gradle?
 ![](android_studio.png)
 
-^ OH, and it's the `newish` standard for Android Studio. As someone who used to maintain our Ant builds, I am a big fan of Gradle. I still consider myself a student of the language.
+^ OH, and it's the build system for Android Studio. If you want to develop Android in Android Studio, you're going to be running Gradle.
+
+^ As someone who used to maintain our Ant builds, I am a big fan of Gradle. 
+For all my familiarity with Gradle, though I still consider myself a student of the language.
 If at some point find my something that I put up on the screen that offends your Groovy/Gradle sensibilities, I want to hear about it.
 Please tell me about it after the talk.
 
@@ -319,6 +322,31 @@ Java:
 
 ---
 
+Java:
+
+````java
+	int amount = 4563;
+	String yourBill = "You owe me " + amount;
+	
+	String.format("You owe me %d", amount);
+````
+
+^ or if you want to get fancy, you can do a format string.
+This is totally reasonable for most things, but can get cumbersome quickly.
+
+---
+
+Java:
+
+````java
+	String.format("On %s the %s of %s %s paid $%d to %s", 
+		day, month, year, payee, amountPaid, richMan);
+````
+
+^ this string was no fun to write
+
+---
+
 Groovy:
 
 ````java
@@ -381,8 +409,8 @@ for (String string : [ "Erin", "Jan", "Taylor" ]) { println string.length() }
 
 ^ Let's go over closures really fast (I promise that this will come back up later. Maybe to haunt you forever.)
 Especially since as Java programmers, most of us don't ever have to deal with closures.
-Unless you secretly do iOS brogramming on the side. In which case you're probably familiar with 
-block syntax, which is essentially the same thing. I think.  I don't know for sure because I don't iOSgram.
+Unless you secretly do iOS programming on the side. In which case you're probably familiar with 
+block syntax, which is essentially the same thing, just with a different name.
 
 ---
 
@@ -567,9 +595,9 @@ gradle.properties
 ````
 org.gradle.daemon=true
 org.gradle.java.home
-# org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+# org.gradle.jvmargs
 org.gradle.parallel
-org.gradle.configureondemand=true
+org.gradle.configureondemand
 ````
 
 ^ Just as a quick aside, here's a few gradle configs that can speed up your builds.
