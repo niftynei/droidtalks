@@ -617,12 +617,12 @@ ColorDrawable
     	private void updateHotspot(float x, float y) {
     		
     		Drawable background = getBackground();    		 
-        	if (background instanceof RippleDrawableCompat) {
+        	if (background != null && background instanceof RippleDrawableCompat) {
             	((RippleDrawableCompat) background).setHotspot(x, y);
 	        }
 
     	    Drawable src = getDrawable();
-        	if (src instanceof RippleDrawableCompat) {
+        	if (src != null && src instanceof RippleDrawableCompat) {
             	((RippleDrawableCompat) src).setHotspot(x, y);
 	        }
 	        
