@@ -22,7 +22,8 @@ Jamie Huson
 
 ---
 
-[[ INSERT IMAGE OF Cyril Mottier's Definition ]]
+### "A drawable is a positioned entity that is to be drawn on a canvas." __-Cyril Mottier__
+
 
 ^ Borrowing Cyril Mottier’s definition: A drawable is a positioned entity that is to be drawn on a canvas.
 Here's a few examples of uses for drawables.
