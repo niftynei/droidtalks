@@ -1,15 +1,6 @@
-# Gradlin'
 
-## __Nuts and bolts__
 
-#### Lisa Neigut __DroidCon NYC__ Sept 21
-
-^ Hello. Good afternoon.  This session we're talking about the
-nuts and bolts of Gradle.  It turns out that that's a lot of ground to cover in 40 minutes.
-
-^ Drink up that coffee. Let's learn some Gradle.
-
----
+——
 
 ##[fit] Hello, I'm Lisa.
 ###[fit] I work on the Android team at Etsy
@@ -28,20 +19,18 @@ We're all excited about the #cardboard freebies.
 
 ## Why Gradle?
 
-^ Well, mostly because Google (aka Xavier and the rest of the tools team at Google), said that it was a good idea.
-Which is true, Gradle is handy.  A lot handier than Ant.
+^ But enough about me. Let’s talk about Gradle.
+
+^ But first off, why are we talking about Gradle at an Android conference? Well, mostly because Google (aka Xavier and the rest of the tools team at Google), said that it was a good idea.
+Which is true, Gradle is powerful and super handy.  A lot handier than Ant, the build system that Android use previously.
 
 ---
 
 ## Why Gradle?
 ![](android_studio.png)
 
-^ OH, and it's the build system for Android Studio. If you want to develop Android in Android Studio, you're going to be running Gradle.
+^ But yeah, basically the reason that we all use Gradle now is because it is THE build system for Android Studio. If you want to develop Android using Android Studio, 99% of you will have Gradle running your builds.
 
-^ As someone who used to maintain our Ant builds, I am a big fan of Gradle. 
-For all my familiarity with Gradle, though I still consider myself a student of the language.
-If at some point find my something that I put up on the screen that offends your Groovy/Gradle sensibilities, I want to hear about it.
-Please tell me about it after the talk.
 
 ---
 
@@ -49,7 +38,15 @@ Please tell me about it after the talk.
 
 ## __Nuts and bolts__
 
-^ Before we get started, please indulge my curiosity. By a show of hands, how many of you have worked on or written any Gradle scripts?
+#### Lisa Neigut __DroidCon NYC__ Sept 21
+
+
+^ Before we get started, please indulge my curiosity. By a show of hands, how many of you 
+have worked on or written any Gradle scripts?
+
+^[[ PAUSE TO LET PEOPLE RAISE THEIR HANDS ]]. Ok, thank you.  [[ MAKE COMMENT ABOUT % ]]
+
+^ So drink up that coffee. Let's learn some Gradle.
 
 ---
 
@@ -60,17 +57,17 @@ Please tell me about it after the talk.
 	- Build Phases
 	- Projects
 
-^ Today, I'm going to talk about how gradle works, starting with groovy.
+^ Here’s a quick list of what I’m hoping to cover in the next … 35 minutes
 
 ^ With any talk on the nuts and bolts of Gradle, especially in a conference for Android devs who, I'm assuming,
 mostly write Java, it seems wise to begin with a short primer on Groovy, the language that Gradle is built on top of.
 
 ^ If you already know Groovy backwards and forwards, please excuse my, hopefully short, digression.  I promise this will all 
-be useful for understanding (and possibly writing) awesome Gradle tasks.
+be useful for understanding (and possibly writing) Gradle build scripts.
 
-^ After Groovy, we'll get into the basics of gradle, and delve into writing multiproject build scripts
+^ After Groovy, we'll get into the basics of gradle, specifically tasks, build phases and projects
 
-^ So what is Groovy?  I looked it up on Wikipedia.  This is the definition that I more or less pieced together from that:
+^ So what is Groovy?  I wasn’t really sure, so I looked it up on Wikipedia.  This is the definition that I more or less pieced together from that:
 
 ---
 
@@ -176,29 +173,9 @@ Groovy:
 ["Erin", "Jan", "Taylor"].findAll{ it.size() >= 4 }.each{ println it }
 ````
 
-^ Note that it is a shortcut.
+^ So here they are side by side.  
 
----
-
-Groovy:
-
-````java
-\\ Abbreviated with it
-["Erin", "Jan", "Taylor"]
-    .findAll{ it.size() >= 4 }
-    .each{ println it }
-````
-
-```java
-\\ Long form
-["Erin", "Jan", "Taylor"]
-	.findAll{ name -> name.size() >= 4 }
-	.each{ filteredName -> println filteredName }
-````
-
-^ It is a shortcut way of saying "the current item in the list that you're iterating over!"
-
-^ Cool. So what else does Groovy have? 
+^ A quick side note. In the Groovy, it is an abbreviation. We’ll get to this later.
 
 ---
 
@@ -216,21 +193,23 @@ Groovy:
 - Closures
 - Objects
 
----
-
-## Let's start with the good parts!
 
 ^ Note that all examples were, more or less, taken off of the Groovy Wikipedia page.  Thanks internet commons!
 
+
 ---
 
-# Syntax
+## Let's start with the good parts!
 
 ---
 
 ###[fit] ;
 
 ^ completely optional!!
+
+---
+
+# Syntax
 
 ---
 
@@ -254,6 +233,8 @@ Groovy
 
 ^ Becomes this.  I like being explicit, but this is a way that you can do this.
 
+^ Cool, so Groovy requires a smidge less typing that Java.
+
 ---
 
 # Null Checks
@@ -268,9 +249,20 @@ Java
 	}
 ````
 
-^ if you're tired of typing this, relax.  groovy makes your hands' life easier.
+^ chances are you’ve written some code that looks like this at some point
+
+^ I’m happy to tell you that Groovy makes it a bit easier. instead of writing this out, youc an just do this.
 
 ---
+
+Java
+
+````java
+	if (activity != null) { 
+		activity.finish();
+	}
+````
+
 
 Groovy
 
@@ -278,7 +270,11 @@ Groovy
 	activity?.finish()
 ````
 
-^ this is called the safe navigation operator
+^ Put a Question Mark before the function call. The technical term for this is the safe navigation operator.  
+
+^ I call it the Destroyer of NPEs. 
+
+^ [[ QUICK DEMO ]]
 
 ---
 
@@ -292,7 +288,7 @@ Groovy:
 
 `def variable`
 
-^ that was easy.
+^ I’m happy to say that you no longer need to know the type of your variables in Groovy.  You can just declare them as `def`.
 
 ---
 
@@ -303,7 +299,7 @@ Groovy:
 `def variable`
 `String variable`
 
-^ ok, so you can also declare a type, if you want your IDE to help you out. ; )
+^ If you want your IDE to help you out, it’s still ok to declare the type.  This is where the duck and static typing part of the turducken comes in.
 
 ---
 
@@ -340,7 +336,7 @@ Java:
 
 ````java
 	String.format("On %s the %s of %s %s paid $%d to %s", 
-		day, month, year, payee, amountPaid, richMan);
+		dayOfWeek, day, month, payee, amountPaid, richMan);
 ````
 
 ^ this string was no fun to write
@@ -388,6 +384,18 @@ Groovy:
 ^ if you want to get real fancy.
 
 ---
+
+Groovy:
+
+````java
+String string = 
+	“On $dayOfWeek the $day of $month” +
+	“ $payee paid \$$amountPaid to $richMan”
+````
+
+^ And here’s that no fun format string from Java, in Groovy
+
+—
 
 # Arrays
 
@@ -443,7 +451,9 @@ assert odds == [1, 3, 5, 7, 9]
 
 ^ The closure here is { it % 2 }.  That's an in line declared method.
 
-^Closures can be lazily evaluated, which is useful in some cases [[ Run below in emulator ]]
+^Closures aren’t executed until they’re called, so they can be lazily evaluated. Let’s take a look at some lazily evaluated code.
+
+^[[ Run below in emulator ]]
 
 ^Integer amount = 10
 BigDecimal tax = 0.15
@@ -457,6 +467,26 @@ println deferredText
 
 ^println text
 println deferredText
+
+---
+
+Groovy:
+
+````java
+\\ Abbreviated with it
+["Erin", "Jan", "Taylor"]
+    .findAll{ it.size() >= 4 }
+    .each{ println it }
+````
+
+```java
+\\ Long form
+["Erin", "Jan", "Taylor"]
+	.findAll{ name -> name.size() >= 4 }
+	.each{ filteredName -> println filteredName }
+````
+
+^ It is a shortcut way of saying "the current item in the list that you're iterating over!"
 
 ---
 
@@ -545,7 +575,18 @@ Gradle is a project automation tool that builds upon the concepts of Apache Ant 
 
 ^ What is it?
 
+^ [[ READ DESC ]]
+
+^ I went ahead and made up my own definition for this
+
 ---
+
+#Gradle:
+Java builds without XML.
+
+^ Hooray!
+
+—
 
 ## Structure of a Gradle Project
 
@@ -574,7 +615,10 @@ Gradle is a project automation tool that builds upon the concepts of Apache Ant 
 - settings.gradle
 - gradle.properties
 
-^ Where you put different build properties.  Gradle has some configuration options, you can also hide secret keys here
+^ Where you put different build properties.  
+
+^ Gradle has some configuration options, you can also put build specific flags into here
+As long as you’re not checking this into your source control, it’s a great place for hiding project secrets
 
 ---
 
