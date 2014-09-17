@@ -72,7 +72,7 @@ ShapeDrawable
 
 StateListDrawable 
 
-![50%] (button_state_change.mov)
+![right|25%] (state-list-drawable-sample.png)
 
 ^ Drawables are flexible and useful.  You can nest different drawbles into each other.
 ^ It's a nice declarative approach to handling state changes.
@@ -276,7 +276,7 @@ the Drawable class.
 
 ---
 
-Methods that need to be overridden:
+Methods to Override:
 
 - draw(Canvas canvas)
 
@@ -284,7 +284,7 @@ Methods that need to be overridden:
 
 ---
 
-Methods that need to be overridden:
+Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
@@ -292,7 +292,7 @@ Methods that need to be overridden:
 
 ---
 
-Methods that need to be overridden:
+Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
@@ -300,7 +300,7 @@ Methods that need to be overridden:
 
 ---
 
-Methods that need to be overridden:
+Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
@@ -309,7 +309,7 @@ Methods that need to be overridden:
 
 ---
 
-Methods that need to be overridden:
+Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
@@ -319,13 +319,13 @@ Methods that need to be overridden:
 
 ---
 
-Methods that need to be overridden:
+Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
 - getIntrinsicHeight/Width()
 - getMinimumHeight/Width()
-- getConstantState() and mutate()
+- setBounds(Rect bounds)
 
 ---
 
@@ -411,6 +411,13 @@ ColorDrawable
 
 ---
 
+`setBounds(Rect rect)`
+
+^ TODO: Lisa talks about Bounds
+
+---
+## Reminder: Shared State
+
 `getConstantState() and mutate()`
 
 ![right|65%] (constant-state-mutate.png)
@@ -465,13 +472,13 @@ ColorDrawable
 		...
 		
 		public void invalidateDrawable(Drawable drawable) {
-    	    if (verifyDrawable(drawable)) {
+    	    ...
         	    final Rect dirty = drawable.getBounds();
             	final int scrollX = mScrollX;
 	            final int scrollY = mScrollY;
     	        invalidate(dirty.left + scrollX, dirty.top + scrollY,
         	            dirty.right + scrollX, dirty.bottom + scrollY);
-	        }
+	        ...
     	}
     	
     	...
