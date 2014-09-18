@@ -6,13 +6,12 @@
 ---
 
 
-[[ INSERT PIC OF LISA ]]
+![left|fit] (lisa.jpg)
 
-![right|30%] (jamie.jpg)
+![right|fit] (jamie.jpg)
 
-Jamie Huson
 
-^ Hi, I'm Lisa I work at Etsy on the Android team. That's Jamie who works with me and he helped me put together this talk.
+^ Hi, I'm Lisa I work at Etsy on the Android team. That's Jamie who works with me and he helped me put together this talk.  We work at Etsy, the online market for handmade and vintage goods that we make together.
 
 ^ At Devoxx 2013, Cyril Mottier gave a great talk on Mastering Android Drawables. This talk aims to build on what Cyril laid out and go a bit more in-depth into the APIs / how to actually implement a custom drawable, and how they relate to a View’s measurement/layout/draw cycles.
 
@@ -22,7 +21,10 @@ Jamie Huson
 
 ---
 
-### "A drawable is a positioned entity that is to be drawn on a canvas." __-Cyril Mottier__
+### "A drawable is a positioned entity 
+### that is to be drawn on a canvas." 
+
+### __-Cyril Mottier__
 
 
 ^ Borrowing Cyril Mottier’s definition: A drawable is a positioned entity that is to be drawn on a canvas.
@@ -30,7 +32,7 @@ Here's a few examples of uses for drawables.
 
 ----
 
-What Makes Drawables Awesome:
+# What Makes Drawables Awesome:
 - Drawing is fun!
 - State Changes
 - Total Separation of View Logic from Code
@@ -45,7 +47,7 @@ What Makes Drawables Awesome:
 
 ---
 
-NinePatchDrawable
+## NinePatchDrawable
 
 ![right|80%] (nine_patch.png)
 
@@ -54,15 +56,7 @@ NinePatchDrawable
 
 ---
 
-ShapeDrawable
-
-```xml
-	<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    	android:shape="oval">
-	    <solid android:color="@color/green" />
-    	<size android:height="@dimen/padding_medium" android:width="@dimen/padding_medium" />
-	</shape>
-```
+## ShapeDrawable
 
 ![right|25%] (shape-sample.png)
 
@@ -70,16 +64,16 @@ ShapeDrawable
 
 ---
 
-StateListDrawable 
+## StateListDrawable 
 
 ![right|25%] (state-list-drawable-sample.png)
 
-^ Drawables are flexible and useful.  You can nest different drawbles into each other.
+^ Drawables are flexible and useful.  You can nest different drawables into each other.
 ^ It's a nice declarative approach to handling state changes.
 
 ---
 
-BitmapDrawable
+## BitmapDrawable
 
 ![right|25%] (bitmap-sample.png)
 
@@ -87,7 +81,7 @@ BitmapDrawable
 
 ---
 
-LayerDrawable
+## LayerDrawable
 
 ![right|25%] (layer-list-sample.png)
 
@@ -95,7 +89,7 @@ LayerDrawable
 
 ---
 
-** TODO : Show as a hierarchy tree **
+![fit] (drawable_hierarchy.png)
 
 ^ These are some of the drawables that come with the Android SDK, which means you can create them in XML files and then assign them to views also in XML.
 ^ Now, we want to build custom drawables that draw even fancier things. Such as ...
@@ -106,17 +100,17 @@ LayerDrawable
 
 ---
 
-![50%] (etsy-actionbar-with-badge.png)
+![100%] (badge_drawable.png)
 
 ^ This is our cart icon that draws a custom Badge Drawable.
 
 ---
 
-![left|115%] (icon_drawables.png)
-![right|75%](icon_documentation.png)
+![left|150%] (icon_drawables.png)
+![right|120%](icon_documentation.png)
 
 ^ Internally, we've been using them to turn fonts into icons.  Admittedly, it makes our code a bit 
-more verbose at times, but it saves time in other ways, and reduces the size of our APK.
+more verbose at times, but it saves time in other ways (especially for our designers. You’re welcome Paul), and reduces the size of our APK.
 
 ---
 
@@ -145,6 +139,7 @@ more verbose at times, but it saves time in other ways, and reduces the size of 
 and then you can reference it in a view, set it as a background for a view, etc, like this.
 
 ---
+
 # Using built-in Drawables
 
 layered_drawable.xml
@@ -178,7 +173,7 @@ layout.xml
 ---
 ## Custom Drawable
 
-lisas_custom_drawable.xml
+`lisas_custom_drawable.xml`
 
 ````xml
 <custom-drawable xmlns:android="http://schemas.android.com/apk/res/android"
@@ -194,11 +189,12 @@ Android Studio puts on your drawable folder.  But it will build and launch.
 
 ----
 
-Runtime Error
+##Runtime Error
 
-````
-Caused by: org.xmlpull.v1.XmlPullParserException: Binary XML file line #2: invalid drawable tag custom
-````
+
+Caused by: org.xmlpull.v1.XmlPullParserException: 
+	Binary XML file line #2: __invalid drawable tag custom__
+
 
 ^ Only to crash, with a runtime error that looks something like this.
 Ok, so what's going on here?
@@ -245,7 +241,7 @@ Drawable.java
 ````
 
 ^ It turns out that the custom drawable types that are permitted are hard coded into
-the Drawable class.
+the Drawable class.  Anything other than a built-in drawable will crash your app.
 
 ---
 
@@ -326,6 +322,7 @@ Methods to Override:
 - getIntrinsicHeight/Width()
 - getMinimumHeight/Width()
 - setBounds(Rect bounds)
+- getConstantState() and mutate()
 
 ---
 
@@ -369,7 +366,7 @@ if it's a combination, you're TRANSLUCENT.
 
 ---
 
-`getIntrinsicHeight`
+`getIntrinsicHeight\Width()`
 
 
 
@@ -377,7 +374,7 @@ if it's a combination, you're TRANSLUCENT.
 
 ---
 
-`getIntrinsicHeight`
+`getIntrinsicHeight\Width()`
 
 ColorDrawable
 
@@ -395,27 +392,52 @@ ColorDrawable
 ^ In the case of a solid color it has no intrinsic height. In the base of a Bitmap it might be the Bitmap's height or a scaled value.
 ^ Where there is no intrinsic height you return -1, else the value.
 
+^ this is the call that view queries during the measurement pass
+
 ---
 
-`getMinimumHeight` 
+`getMinimumHeight\Width()` 
 
 ^ Like intrinsic, except minimum that can be passed back is 0, instead of -1 for intrinsic.
 
 
 ---
 
-`getMinimumHeight` 
+`getMinimumHeight\Width()` 
 
 --
 **Return 0** instead of -1
 
+^ Relatively unused, outside of the View class
+
+^ As far as I’ve seen, this is only used in the View class to calculate the MinimumHeight.
+
+^ If you’re writing custom views to encapsulate a Drawable, use getIntrinsic
+
 ---
 
-`setBounds(Rect rect)`
+`setBounds(int left, int top, int right, int bottom)`
 
-^ TODO: Lisa talks about Bounds
+^ sets the bounds or drawing coordinates available for the drawable to draw itself in.
+
+—
+
+`setBounds(int left, int top, int right, int bottom)`
+
+![right|fit] (view_coordinates.png)
+
+^ Coordinates for drawing a view are measured from the top left corner.  Every View calculates its own coordinates.
 
 ---
+
+`setBounds(int left, int top, int right, int bottom)`
+
+![right|fit] (drawable_coordinates.png)
+
+^ The drawable’s coordinates are calculated then with reference to the View’s coordinate system.
+
+—
+
 ## Reminder: Shared State
 
 `getConstantState() and mutate()`
@@ -457,7 +479,7 @@ ColorDrawable
 
 ---
 
-# Drawable.DrawableCallback
+## Drawable.DrawableCallback
 
 ````java
 	public class View implements Drawable.DrawableCallback {
@@ -492,7 +514,7 @@ ColorDrawable
 
 ---
 
-# Drawable.DrawableCallback
+## Drawable.DrawableCallback
 
 ```java
 	public abstract class Drawable {
@@ -511,16 +533,77 @@ ColorDrawable
 		
 	}
 ```
+
 ^ Here's the Drawable side of things. When it should redraw call invalidateSelf() and the View will redraw you.
 ^ The single Callback is referenced. If you needed multiple callbacks triggered for one invalidateSelf() call you'll need to use a wrapper.
 
 ---
 
-# Drawable Bounds
-
-^ Todo: lisa
+## Drawable Bounds
 
 ---
+
+### View Render Passes
+- Measurement
+- Layout
+- Draw
+
+^ Views are kind of like complicated wrappers for drawables. (Very complicated wrappers).
+^ The drawable interacts with the View during the measurement, layout, and draw cycles
+
+——
+
+### Measurement
+- View queries the Drawable for its desired size, using getIntrinsic
+- View uses the dimens of the Drawable to calculate its dimens and reports back its size to parent
+
+^ Every view does this a little bit differently
+
+—
+
+### Draw
+- Calculates the bounds for that drawable*
+- Sets bounds on the drawable.
+- Calls draw on the drawable
+
+^ * Calculating the bounds for the drawable can happen any time after the measurement of the view has happened
+
+^ The contract between the drawable and the view that you’re constructing isn’t set in stone.  How they interact depends on the view that you’re drawing.  
+
+—
+
+### A Few Notes:
+The View assumes that the drawable knows what size it wants to be before the bounds get set.
+
+^ This means that if you want to do any fancy calculations in the drawable, you’ll need a way to get the parent view to calculate the bounds for you, without knowing the size of the drawable.
+
+—
+
+### A Few Notes:
+The View assumes that the drawable knows what size it wants to be before the bounds get set.
+
+Every View computes the drawable’s bounds differently.
+
+^ For the drawable in an ImageView, if you pass back bounds of -1, it will set the bounds to be the maximum allowed size for the view.
+
+^ in a compound view, it sets the bounds to be 0.
+
+—
+
+### View Bound Calculations:
+
+ColorDrawable.java
+
+````java
+getIntrinsicHeight() { returns -1; }
+````
+
+CompoundButton : `setBounds(-1, -1, -1, -1);`
+ImageView : `setBounds(leftMax, rightMax, topMax, bottomMax)`
+
+^ For the drawable in an ImageView, if you pass back bounds of -1, it will set the bounds to be the maximum allowed size for the view.
+
+—
 
 # The Future of Drawable 
 
@@ -707,5 +790,7 @@ ColorDrawable
 ---
 
 # Thank You!
+
+^ If you’ve got questions or are interested in what we’re up to at Etsy, come say hi at our booth
 
 ---

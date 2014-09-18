@@ -19,6 +19,19 @@ android {
     }
 }
 
+
+configurations {
+    libraries {}
+    compile {
+        extendsFrom libraries
+    }
+    androidTestCompile {
+        extendsFrom libraries
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    libraries 'com.etsy.android.grid:library:1.0.5'
 }
+

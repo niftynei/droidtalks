@@ -1369,3 +1369,11 @@ The projects(:projectName) block
 the allProjects() block
 
 ---
+
+- androidTestCompile includes compile
+- include an example of an @aar
+- what have i used gradle for?
+- Changes the version number (use real life examples)
+- more examples from real life
+- more syntactic examples in the
+- play with the display set up
