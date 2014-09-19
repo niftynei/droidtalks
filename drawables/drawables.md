@@ -725,11 +725,16 @@ ImageView : `setBounds(leftMax, rightMax, topMax, bottomMax)`
 	public class RippleDrawableCompat extends LayerDrawable {
 	
 		private Drawable mask;
+		private ColorStateList color;
 	
-		public RippleDrawableCompat(Drawable[] layers) {
-			super(layers);
-			this.mask = layers[0];
+		public RippleDrawableCompat(Drawable content, Drawable mask) {
+			super(content != null ? new Drawable[] { content} : new Drawable[] { } );
+			this.mask = mask;
 		}	
+		
+		public void setColor(ColorStateList colorStateList) {
+			this.color = colorStateList;
+		}
 		
 		...
 	
@@ -737,54 +742,98 @@ ImageView : `setBounds(leftMax, rightMax, topMax, bottomMax)`
 ```
 
 ^ Ok cool, so let's tackle the second feature which is the mask.
-^ You basically need a way to specify the mask. In L you give a Layer an ID of @android:id/mask
-^ Here we just use the first layer from the LayerDrawable constructor;
+^ We're matching the constructor parameters with the RippleDrawable from L. Since we inherit from LayerDrawable we need to pass in a valid Drawable array.
+^ We also have to provide a method to set the ColorStateList that provides the color of the ripple.
 
 ---
 
 # RippleDrawableCompat
 
 ```java
-	public class RippleDrawableCompat {
+	public class RippleDrawableCompat extends LayerDrawable  {	
 	
 		...
 	
 		@Override
     	protected void onBoundsChange(Rect bounds) {
         	super.onBoundsChange(bounds);
-        
-            // convert the drawable into a bitmap to use with a BitmapShader
-            Bitmap maskBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
+        	
+        	...
+        	
+        	// we have a Drawable to use as a mask
+        	if (mask != null) {
 
-            Canvas maskCanvas = new Canvas(maskBitmap);
-            layerOne.setBounds(bounds);
-            layerOne.draw(maskCanvas);
+            	// convert the drawable into a bitmap
+	            Bitmap maskBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
 
-            // this shader will limit where drawing takes place to only the mask area
-            BitmapShader shader = new BitmapShader(maskBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            LinearGradient gradient = new LinearGradient(0, 0, 0, 0, baseColor, baseColor, Shader.TileMode.CLAMP);
-            ComposeShader composed = new ComposeShader(shader, gradient, PorterDuff.Mode.SRC_IN);
+    	        Canvas maskCanvas = new Canvas(maskBitmap);
+        	    mask.setBounds(bounds);
+            	mask.draw(maskCanvas);
 
-			// apply the shader to the Paints
+	            // this shader will limit where drawing takes place to only the mask area
+    	        maskShader = new BitmapShader(maskBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+
+        	}
+                    
+        }
+    }
+```
+
+^ Once we know our size we are let's create our mask.
+^ We create a BitmapShader that will limit drawing to the area occupied by the bitmap. 
+
+^ The BitmapShader is created by having the masked Drawable draw itself onto a new Canvas on a new Bitmap.
+
+---
+
+# RippleDrawableCompat
+
+```java
+	public class RippleDrawableCompat extends LayerDrawable {	
+	
+		...
+		
+		@Override
+	    protected boolean onStateChange(int[] state) {
+	    	
+	    	// get the color for the current state                
+	    	int color = colorStateList.getColorForState(state, Color.TRANSPARENT);
+	    	
+	    	...
+	    	
+	    	ComposedShader shader = shaderMap.get(color);
+	    	
+	    	if(shader == null) {
+		    	LinearGradient gradient = new LinearGradient(0, 0, 0, 0, color, color, Shader.TileMode.CLAMP);
+    	        shader = new ComposeShader(maskShader, gradient, PorterDuff.Mode.SRC_IN);
+	            shaderMap.put(color, composed);
+    	    }
+            
+                    
             ripplePaint.setShader(composed);
             ripplePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
 
             highlightPaint.setShader(composed);
             highlightPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
-        }
-    }
+
+			...
+	    	
+	    }
+	}
 ```
 
-^ Once we know what size we are let's create our mask.
-^ We're composing a BitmapShader and a LinearGradient of color of the Ripple using PorterDuff's SRC_IN mode
-^ The BitmapShader is created by having the masked Drawable draw itself onto a new Canvas on a new Bitmap.
+^ When our state changes we can now get the color of our ripple for this state and apply it to our drawing Paint objects.
+^ We're composing our mask BitmapShader and a LinearGradient of color of the Ripple using PorterDuff's SRC_IN mode
+^ This will draw the correct color we need but limit the drawing to the area of the mask.
 ^ Once we apply the composed Shader to the Paint the Ripple will be limited the mask's shape.
+^ Since we will reuse the same Shaders during state changes for the same color, we keep them in a map.
+
 
 ---
 
 ![35%|loop] (ripple-compat-demo.mov)
 
-^ Here's a sample video of the effects in a demo running on a Jelly Bean Emulator.
+^ Here's a demo of the effects running on a Jelly Bean Emulator.
 
 ---
 
