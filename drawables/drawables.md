@@ -716,7 +716,6 @@ ImageView : `setBounds(leftMax, rightMax, topMax, bottomMax)`
 
 
 ^ Then we add a simple line to a View or Layout that passes along the TouchEvents. You can add this to any custom Views easily.
-^ This simplified code doesn't take into account multiple pointers but you can easily filter by the primary pointer.
 
 ---
 
