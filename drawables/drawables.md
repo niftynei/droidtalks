@@ -28,7 +28,6 @@
 
 
 ^ Borrowing Cyril Mottier’s definition: A drawable is a positioned entity that is to be drawn on a canvas.
-Here's a few examples of uses for drawables.
 
 ----
 
@@ -96,10 +95,6 @@ Here's a few examples of uses for drawables.
 
 ---
 
-# Custom Drawables
-
----
-
 ![100%] (badge_drawable.png)
 
 ^ This is our cart icon that draws a custom Badge Drawable.
@@ -111,6 +106,10 @@ Here's a few examples of uses for drawables.
 
 ^ Internally, we've been using them to turn fonts into icons.  Admittedly, it makes our code a bit 
 more verbose at times, but it saves time in other ways (especially for our designers. You’re welcome Paul), and reduces the size of our APK.
+
+---
+
+# Custom Drawables
 
 ---
 
@@ -201,14 +200,9 @@ Ok, so what's going on here?
 
 ---
 
-Drawable.java
+##Drawable.java
 
 ````java
-	/**
-	* Create from inside an XML document. Called on a parser positioned at
-	* a tag in an XML document, tries to create a Drawable from that tag.
-	* Returns null if the tag is not a valid drawable.
-	*/
 	public static Drawable createFromXmlInner(Resources r, XmlPullParser parser, AttributeSet attrs)
 	throws XmlPullParserException, IOException {
 		Drawable drawable;
@@ -250,6 +244,8 @@ the Drawable class.  Anything other than a built-in drawable will crash your app
 ---
 
 ![75%] (android-deal-with-it.gif)
+
+^ overriding this static call to inject your own drawable type is left as an exercise for the reader
 
 ---
 
@@ -364,9 +360,11 @@ ColorDrawable.java
 
 
 ^ This is best explained by this snippet from Color Drawable.
-OPAQUE is anything without alpha
-If it's see through, pass back transparent
-if it's a combination, you're TRANSLUCENT.
+
+^If we grab the alpha value out of the color that we’ve set
+we return OPAQUE for an alpha value of 255 (1f)
+If it's see alpha value of 0, this drawable is transparent
+Any other alpha value, you're TRANSLUCENT.
 
 ---
 
@@ -482,7 +480,7 @@ ColorDrawable
 ```
 
 ^ The Drawable.Callback is how the View and Drawable talk. Its a very simple
-^ interface that allows the Drawable to tell the View it needs redrawn. The View then 
+^ interface that allows the Drawable to tell the View it needs to be redrawn. The View then 
 ^ invalidates itself in the area the Drawable occupies. Let's focus on the invalidateDrawable method.
 
 ---
@@ -576,7 +574,6 @@ ColorDrawable
 ### Measurement
 - View queries the Drawable for its desired size, using getIntrinsic
 
-^ Every view does this a little bit differently
 
 —
 
@@ -600,10 +597,6 @@ ColorDrawable
 - Calculates the bounds for that drawable*
 - Sets bounds on the drawable.
 
-^ * Calculating the bounds for the drawable can happen any time after the measurement of the view has happened
-
-^ The contract between the drawable and the view that you’re constructing isn’t set in stone.  How they interact depends on the view that you’re drawing.  
-
 —
 
 ### Draw
@@ -611,9 +604,7 @@ ColorDrawable
 - Sets bounds on the drawable.
 - Calls draw on the drawable
 
-^ * Calculating the bounds for the drawable can happen any time after the measurement of the view has happened
-
-^ The contract between the drawable and the view that you’re constructing isn’t set in stone.  How they interact depends on the view that you’re drawing.  
+^ It’s worth mentioning that the contract between the drawable and the view that you’re constructing isn’t set in stone.  How they interact depends on the view that you’re drawing.  
 
 —
 
@@ -899,3 +890,4 @@ ImageView : `setBounds(leftMax, rightMax, topMax, bottomMax)`
 ^ If you’ve got questions or are interested in what we’re up to at Etsy, come say hi at our booth
 
 ---
+
