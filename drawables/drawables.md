@@ -1,19 +1,26 @@
 
-# getBounds()
+# __*getBounds()*__
+
 
 # [fit] The story of Drawables and their View masters
+
+#### __*Jamie Huson*__ + __*Lisa Neigut*__ | __20 Sept 2014__
 
 ---
 
 
-![left|fit] (lisa.jpg)
+![right|fit] (lisa.jpg)
 
-![right|fit] (jamie.jpg)
+![left|fit] (jamie.jpg)
 
 
-^ Hi, I'm Lisa I work at Etsy on the Android team. That's Jamie who works with me and he helped me put together this talk.  We work at Etsy, the online market for handmade and vintage goods that we make together.
+^ Hi, I'm Lisa I work at Etsy on the Android team. That's Jamie who works with me and he helped me put together this talk.  He wasn’t able to make it out to New York today to present with me.  
 
-^ At Devoxx 2013, Cyril Mottier gave a great talk on Mastering Android Drawables. This talk aims to build on what Cyril laid out and go a bit more in-depth into the APIs / how to actually implement a custom drawable, and how they relate to a View’s measurement/layout/draw cycles.
+^ We both work at Etsy, the online market for handmade and vintage goods that we make together.
+
+^ Today, I’m talking about Drawables.  The inspiration from this talk comes from another very good talk that Cyril Mottier gave on Mastering Android Drawables at Devoxx 2013. This talk aims to build on what Cyril laid out and go a bit more in-depth into the APIs / how to actually implement a custom drawable, and how they relate to a View’s measurement/layout/draw cycles.  If you haven’t seen it yet, I highly recommend checking it out.
+
+^ So let’s get started.
 
 ---
 
@@ -27,7 +34,7 @@
 ### __-Cyril Mottier__
 
 
-^ Borrowing Cyril Mottier’s definition: A drawable is a positioned entity that is to be drawn on a canvas.
+^ Borrowing Cyril’s definition: A drawable is a positioned entity that is to be drawn on a canvas.
 
 ----
 
@@ -88,24 +95,42 @@
 
 ---
 
-![fit] (drawable_hierarchy.png)
+![60%] (drawable_hierarchy.png)
 
 ^ These are some of the drawables that come with the Android SDK, which means you can create them in XML files and then assign them to views also in XML.
 ^ Now, we want to build custom drawables that draw even fancier things. Such as ...
 
 ---
 
-![100%] (badge_drawable.png)
+## BadgeDrawable
+![fit|right] (badge_drawable.png)
 
-^ This is our cart icon that draws a custom Badge Drawable.
+^ At Etsy, we use Jesse Hendrickson’s BadgeDrawable class. It displays a number over 
+a circle drawable.  This view is a single TextView, who’s right compoundDrawable has been
+set to a BadgeDrawable instance. To update the number, we just change the number on the drawable.
 
----
+——
 
-![left|150%] (icon_drawables.png)
-![right|120%](icon_documentation.png)
+##IconDrawable
+![fit|right] (icon_drawable.png)
 
-^ Internally, we've been using them to turn fonts into icons.  Admittedly, it makes our code a bit 
-more verbose at times, but it saves time in other ways (especially for our designers. You’re welcome Paul), and reduces the size of our APK.
+
+^ Another custom Drawable that we’ve been using internally is an Font Drawable.
+
+^ From a very high level, this drawable type lets us take the SVG text character from a font file and turn it into a drawable type.  
+
+^ We can then render those drawables into any colors or sizes that we want and the come out pixel perfect, independent of your screen density.  Our designers love them.
+
+^ A lot of what we’ll talk about today comes from my experience creating this custom drawable type for fonts.
+
+—
+
+
+##IconDrawable
+![fit|right] (icon_drawable.png)
+
+![100%|right](icon_documentation.png)
+
 
 ---
 
@@ -172,7 +197,7 @@ layout.xml
 ---
 ## Custom Drawable
 
-`lisas_custom_drawable.xml`
+custom_drawable.xml
 
 ````xml
 <custom-drawable xmlns:android="http://schemas.android.com/apk/res/android"
@@ -183,10 +208,35 @@ layout.xml
 ````
 
 ^ let's say I've got a custom drawable. It has a few properties, and I'm setting the color onto it.
-This will actually compile and everything looks fine, other than the hideous red underline that 
-Android Studio puts on your drawable folder.  But it will build and launch.  
 
 ----
+
+## Custom Drawable
+
+custom_drawable.xml
+
+````xml
+<custom-drawable xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	app:icon="@id/ic_etsy_e"
+	app:color="@color/etsy_orange" >
+</custom-drawable>
+````
+
+layout.xml
+
+```xml
+<View 
+	...
+	android:background="@drawable/custom_drawable”
+/>
+````
+
+^ Just like the previous item, then you set it as the background for you View
+
+^ If you ignore the warnings that Android Studio gives you for this, and just go ahead and build and deploy the project, it will compile and the app will launch.
+
+—
 
 ##Runtime Error
 
@@ -252,7 +302,7 @@ the Drawable class.  Anything other than a built-in drawable will crash your app
 # Good ol' Java
 
 ````java
-    ShapeDrawable drawable = new ShapeDrawable(new OvalShape());
+    CustomDrawable drawable = new CustomDrawable();
     drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.DST);
     mView.setBackground(drawable);
             
@@ -268,68 +318,31 @@ the Drawable class.  Anything other than a built-in drawable will crash your app
 
 ---
 
-## Methods to Override:
-
-- draw(Canvas canvas)
-
-^ Of course, you need to draw on the canvas for a drawable
-
----
-
-## Methods to Override:
-
-- draw(Canvas canvas)
-- getOpacity()
-
-
----
-
-## Methods to Override:
-
-- draw(Canvas canvas)
-- getOpacity()
-- getIntrinsicHeight/Width()
-
----
-
-## Methods to Override:
+## Methods to @Override:
 
 - draw(Canvas canvas)
 - getOpacity()
 - getIntrinsicHeight/Width()
 - getMinimumHeight/Width()
-
----
-
-## Methods to Override:
-
-- draw(Canvas canvas)
-- getOpacity()
-- getIntrinsicHeight/Width()
-- getMinimumHeight/Width()
-- setBounds(Rect bounds)
-
----
-
-## Methods to Override:
-
-- draw(Canvas canvas)
-- getOpacity()
-- getIntrinsicHeight/Width()
-- getMinimumHeight/Width()
-- setBounds(Rect bounds)
 - getConstantState() and mutate()
 
-^ so let’s go through these
+^ so let’s go through a few of the API calls that are key to creating a custom drawable.
+This is by no means a comprehensive list.
+
+——
+
+`@Override`
+`draw(Canvas canvas)`
 
 ---
 
+`@Override`
 `draw(Canvas canvas)`
 
 - Just like a View's drawing.
 - Call ```canvas.drawSomething(Paint)``` methods.
 - Transformations, Rotations, Shaders all still apply.
-- Only will display within the bounds set by setBounds()
+- Use `getBounds()` to determine drawing area
 
 ^ Fairly self explanatory. Just like a normal view. You call the draw methods on the canvas with a Paint object.
 ^ You can do transformations, rotations, etc on the canvas and use Shaders on Paint.
@@ -337,11 +350,13 @@ the Drawable class.  Anything other than a built-in drawable will crash your app
 
 ---
 
+`@Override`
 `getOpacity()`
 
 
 ---
 
+`@Override`
 `getOpacity()`
 
 ColorDrawable.java
@@ -366,25 +381,24 @@ we return OPAQUE for an alpha value of 255 (1f)
 If it's see alpha value of 0, this drawable is transparent
 Any other alpha value, you're TRANSLUCENT.
 
+^The other option is PixelFormat.UNKNOWN
+
 ---
 
+`@Override`
 `getIntrinsicHeight\Width()`
-
 
 
 ^ The intrinsic height/width of the drawable. 
 
 ---
 
+`@Override`
 `getIntrinsicHeight\Width()`
 
-ColorDrawable
+ColorDrawable -> Drawable
 
 ````java
-    /**
-     * Return the intrinsic height of the underlying drawable object. Returns
-     * -1 if it has no intrinsic height, such as with a solid color.
-     */
     public int getIntrinsicHeight() {
         return -1;
     }
@@ -398,60 +412,54 @@ ColorDrawable
 
 ---
 
+`@Override`
 `getMinimumHeight\Width()` 
 
-^ Like intrinsic, except minimum that can be passed back is 0, instead of -1 for intrinsic.
-
+^ This is the minimum height / width of your drawable class. It’s called in 
+`getSuggestedMinimumHeight()` in the View class.
 
 ---
 
+`@Override`
 `getMinimumHeight\Width()` 
 
---
-**Return 0** instead of -1
+Default: returns 0
 
-^ Relatively unused, outside of the View class
 
-^ As far as I’ve seen, this is only used in the View class to calculate the MinimumHeight.
+^ The default implementation of Drawable returns 0 instead of -1. 
 
-^ If you’re writing custom views to encapsulate a Drawable, use getIntrinsic
+^ If you’re writing custom views that rely on a Drawable, you’ll want to call  getIntrinsic, not getMinimum
 
 ---
 
-`setBounds(int left, int top, int right, int bottom)`
-
-^ sets the bounds or drawing coordinates available for the drawable to draw itself in.
-
-—
-
-`setBounds(int left, int top, int right, int bottom)`
-
-![right|fit] (view_coordinates.png)
-
-^ Coordinates for drawing a view are measured from the top left corner.  Every View calculates its own coordinates.
-
----
-
-`setBounds(int left, int top, int right, int bottom)`
-
-![right|fit] (drawable_coordinates.png)
-
-^ The drawable’s coordinates are calculated then with reference to the View’s coordinate system.
-
-—
-
-## Reminder: Shared State
-
+`@Override`
 `getConstantState() and mutate()`
+
+^ By default, every drawable inflated from the same resource shares the same ConstantState
+^ When you modify the state of one instance, all the other instances will get the same modification.
+
+—
+
+`@Override`
+`getConstantState()`
+
+![right|65%] (constant_state.png)
+
+—
+
+`@Override`
+`mutate()`
+
+- Make this drawable mutable, independent of other instances.
+- Basically creates an ‘independent’ ConstantState
 
 ![right|65%] (constant-state-mutate.png)
 
-^ It turns out that Android maintains a single drawable state for all instances of a
-^ drawable to conserve memory. But sometime's we need two drawables of the same
-^ type with different states. This was a popular problem early in Android and 
-^ way back in 1.5 cupcake mutate() was added. It creates a new instance of a Drawable
-^ with a new state, independent of the shared state Android keeps. getConstantState()
-^ returns a new instance of state for a drawable.
+^ This is useful when you want to modify properties of drawables loaded from resources
+
+^ once you’ve made the drawable mutable, calling mutate() will have no effect.
+
+
 
 ---
 
@@ -547,9 +555,35 @@ ColorDrawable
 
 ## Drawable Bounds
 
+—
+
+## Drawable.java
+`setBounds(Rect rect)`
+`setBounds(int left, int top, int right, int bottom)`
+
+^ sets the bounds or drawing coordinates available for the drawable to draw itself in.
+
+—
+
+`setBounds(Rect rect)`
+`setBounds(int left, int top, int right, int bottom)`
+
+![right|fit] (view_coordinates.png)
+
+^ Coordinates for drawing a view are measured from the top left corner.  Every View calculates its own coordinates.
+
 ---
 
-### View Render Passes
+`setBounds(Rect rect)`
+`setBounds(int left, int top, int right, int bottom)`
+
+![right|fit] (drawable_coordinates.png)
+
+^ The drawable’s coordinates are calculated then with reference to the View’s coordinate system.
+
+---
+
+## View Render Passes
 - Measurement
 - Layout
 - Draw
@@ -560,7 +594,7 @@ ColorDrawable
 ——
 
 
-### View Render Passes
+## View Render Passes
 - __*Measurement*__
 - Layout
 - __*Draw*__
@@ -571,52 +605,52 @@ ColorDrawable
 ——
 
 
-### Measurement
-- View queries the Drawable for its desired size, using getIntrinsic
+### onMeasure
+- View queries the Drawable for its desired size `getIntrinsic…()`
 
 
 —
 
 
-### Measurement
-- View queries the Drawable for its desired size, using getIntrinsic
-- View uses the dimens of the Drawable to calculate its dimens and reports back its size to parent
+### onMeasure
+- View queries the Drawable for its desired size `getIntrinsic…()`
+- View uses the dimens of the Drawable to calculate its dimens and reports back its size to its parent
 
 ^ Every view does this a little bit differently
 
 —
 
-### Draw
+### onDraw
 - Calculates the bounds for that drawable*
-
-^ * Calculating the bounds for the drawable can happen any time after the measurement of the view has happened
 
 —
 
-### Draw
+### onDraw
 - Calculates the bounds for that drawable*
-- Sets bounds on the drawable.
+- Calls `setBounds()` on the drawable*
+
+^ * Calculating and setting the bounds for the drawable can happen any time after the measurement of the view
 
 —
 
-### Draw
+### onDraw
 - Calculates the bounds for that drawable*
-- Sets bounds on the drawable.
-- Calls draw on the drawable
+- Calls `setBounds()` on the drawable*
+- Calls `draw(canvas)` on the drawable
 
 ^ It’s worth mentioning that the contract between the drawable and the view that you’re constructing isn’t set in stone.  How they interact depends on the view that you’re drawing.  
 
 —
 
 ### A Few Notes:
-The View assumes that the drawable knows what size it wants to be before the bounds get set.
+Views assume that the drawable knows what size it wants to be before the bounds get set.
 
-^ This means that if you want to do any fancy calculations in the drawable, you’ll need a way to get the parent view to calculate the bounds for you, without knowing the size of the drawable.
+^ You may need to know the size of the drawable before knowing how much space you have to draw in.
 
 —
 
 ### A Few Notes:
-The View assumes that the drawable knows what size it wants to be before the bounds get set.
+Views assume that the drawable knows what size it wants to be before the bounds get set.
 
 Every View computes the drawable’s bounds differently.
 
@@ -646,8 +680,26 @@ ColorDrawable.java
 getIntrinsicHeight() { returns -1; }
 ````
 
-CompoundButton : `setBounds(-1, -1, -1, -1);`
-ImageView : `setBounds(leftMax, rightMax, topMax, bottomMax)`
+CompoundButton
+`setBounds(-1, -1, -1, -1);`
+
+^ The compound button will return -1.
+
+—
+
+### View Bound Calculations:
+
+ColorDrawable.java
+
+````java
+getIntrinsicHeight() { returns -1; }
+````
+
+CompoundButton
+`setBounds(-1, -1, -1, -1);`
+
+ImageView 
+`setBounds(leftMax, rightMax, topMax, bottomMax)`
 
 ^ For the drawable in an ImageView, if you pass back bounds of -1, it will set the bounds to be the maximum allowed size for the view.
 
@@ -655,7 +707,7 @@ ImageView : `setBounds(leftMax, rightMax, topMax, bottomMax)`
 
 # The Future of Drawable 
 
-^ Let's talk about some new drawable types coming up in L.
+^ Ok, so we’ve got some time left. Let's talk about some new drawable types coming up in L.
 
 ---
 
@@ -890,4 +942,13 @@ ImageView : `setBounds(leftMax, rightMax, topMax, bottomMax)`
 ^ If you’ve got questions or are interested in what we’re up to at Etsy, come say hi at our booth
 
 ---
+
+
+# __*getBounds()*__
+
+
+# [fit] The story of Drawables and their View masters
+
+#### __*Jamie Huson*__ + __*Lisa Neigut*__ | __20 Sept 2014__
+
 
