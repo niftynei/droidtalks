@@ -191,10 +191,10 @@ Android Studio puts on your drawable folder.  But it will build and launch.
 
 ##Runtime Error
 
-
+````
 Caused by: org.xmlpull.v1.XmlPullParserException: 
 	Binary XML file line #2: __invalid drawable tag custom__
-
+````
 
 ^ Only to crash, with a runtime error that looks something like this.
 Ok, so what's going on here?
@@ -272,7 +272,7 @@ the Drawable class.  Anything other than a built-in drawable will crash your app
 
 ---
 
-Methods to Override:
+## Methods to Override:
 
 - draw(Canvas canvas)
 
@@ -280,7 +280,7 @@ Methods to Override:
 
 ---
 
-Methods to Override:
+## Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
@@ -288,7 +288,7 @@ Methods to Override:
 
 ---
 
-Methods to Override:
+## Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
@@ -296,7 +296,7 @@ Methods to Override:
 
 ---
 
-Methods to Override:
+## Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
@@ -305,7 +305,7 @@ Methods to Override:
 
 ---
 
-Methods to Override:
+## Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
@@ -315,7 +315,7 @@ Methods to Override:
 
 ---
 
-Methods to Override:
+## Methods to Override:
 
 - draw(Canvas canvas)
 - getOpacity()
@@ -324,6 +324,8 @@ Methods to Override:
 - setBounds(Rect bounds)
 - getConstantState() and mutate()
 
+^ so let’s go through these
+
 ---
 
 `draw(Canvas canvas)`
@@ -331,9 +333,11 @@ Methods to Override:
 - Just like a View's drawing.
 - Call ```canvas.drawSomething(Paint)``` methods.
 - Transformations, Rotations, Shaders all still apply.
+- Only will display within the bounds set by setBounds()
 
 ^ Fairly self explanatory. Just like a normal view. You call the draw methods on the canvas with a Paint object.
 ^ You can do transformations, rotations, etc on the canvas and use Shaders on Paint.
+^ You should use the bounds of the view as set here.
 
 ---
 
@@ -459,6 +463,10 @@ ColorDrawable
 
 ---
 
+# Drawable Callback
+
+—
+
 ## Drawable.DrawableCallback
 
 ```java
@@ -553,11 +561,48 @@ ColorDrawable
 
 ——
 
+
+### View Render Passes
+- __*Measurement*__
+- Layout
+- __*Draw*__
+
+^ Views are kind of like complicated wrappers for drawables. (Very complicated wrappers).
+^ The drawable interacts with the View during the measurement, layout, and draw cycles
+
+——
+
+
+### Measurement
+- View queries the Drawable for its desired size, using getIntrinsic
+
+^ Every view does this a little bit differently
+
+—
+
+
 ### Measurement
 - View queries the Drawable for its desired size, using getIntrinsic
 - View uses the dimens of the Drawable to calculate its dimens and reports back its size to parent
 
 ^ Every view does this a little bit differently
+
+—
+
+### Draw
+- Calculates the bounds for that drawable*
+
+^ * Calculating the bounds for the drawable can happen any time after the measurement of the view has happened
+
+—
+
+### Draw
+- Calculates the bounds for that drawable*
+- Sets bounds on the drawable.
+
+^ * Calculating the bounds for the drawable can happen any time after the measurement of the view has happened
+
+^ The contract between the drawable and the view that you’re constructing isn’t set in stone.  How they interact depends on the view that you’re drawing.  
 
 —
 
@@ -587,6 +632,18 @@ Every View computes the drawable’s bounds differently.
 ^ For the drawable in an ImageView, if you pass back bounds of -1, it will set the bounds to be the maximum allowed size for the view.
 
 ^ in a compound view, it sets the bounds to be 0.
+
+—
+
+### View Bound Calculations:
+
+ColorDrawable.java
+
+````java
+getIntrinsicHeight() { returns -1; }
+```
+
+^ For the drawable in an ImageView, if you pass back bounds of -1, it will set the bounds to be the maximum allowed size for the view.
 
 —
 
