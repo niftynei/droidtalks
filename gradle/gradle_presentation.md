@@ -1,9 +1,16 @@
 
 
+# Gradlin'
+
+## __Nuts and bolts__
+
+#### Lisa Neigut __DroidCon NYC__ 21 Sept 2014
+
 ——
 
 ##[fit] Hello, I'm Lisa.
 ###[fit] I work on the Android team at Etsy
+![](android_team.jpg)
 
 ^ In addition to working on our app, I write and maintain our project Gradle scripts, 
 and keep our CI servers up to date.  
@@ -12,7 +19,7 @@ and keep our CI servers up to date.
 
 ![](android_team.jpg)
 
-^  Here's the part of the team that went to Google IO this year, plus our Designer Paul and Doug, a PM at Etsy.
+^  Here's the Etsy team at Google IO this year, plus our Designer Paul and Doug, a PM at Etsy.
 We're all excited about the #cardboard freebies.
 
 ---
@@ -30,16 +37,6 @@ Which is true, Gradle is powerful and super handy.  A lot handier than Ant, the 
 ![](android_studio.png)
 
 ^ But yeah, basically the reason that we all use Gradle now is because it is THE build system for Android Studio. If you want to develop Android using Android Studio, 99% of you will have Gradle running your builds.
-
-
----
-
-# Gradlin'
-
-## __Nuts and bolts__
-
-#### Lisa Neigut __DroidCon NYC__ Sept 21
-
 
 ^ Before we get started, please indulge my curiosity. By a show of hands, how many of you 
 have worked on or written any Gradle scripts?
@@ -67,19 +64,36 @@ be useful for understanding (and possibly writing) Gradle build scripts.
 
 ^ After Groovy, we'll get into the basics of gradle, specifically tasks, build phases and projects
 
-^ So what is Groovy?  I wasn’t really sure, so I looked it up on Wikipedia.  This is the definition that I more or less pieced together from that:
-
 ---
+
+# Things not covered in this talk:
+- Task dependencies
+- Manipulating Files
+- Build Graph Hooks
+- The Android Plugin
+- Multiproject Build Logic
+- Plugins
+
+^ There were a lot of things that we we’re not going to have time to jump into today.
+Here's a short list of those things.  As an aside, I'm presenting on Gradle Plugins
+at DroidCon London at the end of October.  It'll be a bit more in depth into the Gradle
+API than today.
+
+^ Ok, so let’s get started with some Groovy
+
+—
 
 ## Groovy:
 A dynamic, static, strongly, duck typed language that is imperative, object-oriented, functional, and scripting.
 It runs on the Java Virtual Machine.
 
-^ [[READ WHATS ON THE SCREEN]] Ok, let's break that down a bit.  It's... a turducken?
+^ [[READ WHATS ON THE SCREEN]] Wow. Kind of beastly.
 
 --- 
 
-![](turducken.jpg)
+![200%](hydra.jpg)
+
+^ According to a thing I read on the internet, the author of Groovy probably wouldn’t have written Groovy if he had known that Scala existed.
 
 ---
 
@@ -87,7 +101,7 @@ It runs on the Java Virtual Machine.
 A dynamic, static, strongly, duck typed language that is imperative, object-oriented, functional, and scripting.
 It runs on the Java Virtual Machine.
 
-^ Ok, so what does this beast actually look like, on paper?
+^ It may be easier to just jump into an example
 
 ---
 
@@ -205,13 +219,11 @@ Groovy:
 
 ###[fit] ;
 
-^ completely optional!!
+^ completely optional!! That’s not the only thing you take out.
 
 ---
 
-# Syntax
-
----
+## Syntax
 
 Groovy
 
@@ -222,6 +234,8 @@ Groovy
 ^ you can also take a lot more out.
 
 ---
+
+## Syntax
 
 Groovy
 
@@ -237,9 +251,7 @@ Groovy
 
 ---
 
-# Null Checks
-
----
+## Null Checks
 
 Java
 
@@ -254,6 +266,8 @@ Java
 ^ I’m happy to tell you that Groovy makes it a bit easier. instead of writing this out, youc an just do this.
 
 ---
+
+## Null Checks
 
 Java
 
@@ -278,11 +292,9 @@ Groovy
 
 ---
 
-# Dynamic Typing
+## Dynamic Typing
 
----
-
-## Use the `def` keyword!
+Use the `def` keyword!
 
 Groovy:
 
@@ -292,22 +304,20 @@ Groovy:
 
 ---
 
-## Use the `def` keyword!
+## Dynamic Typing
+
+Use the `def` keyword!
 
 Groovy:
 
 `def variable`
 `String variable`
 
-^ If you want your IDE to help you out, it’s still ok to declare the type.  This is where the duck and static typing part of the turducken comes in.
+^ If you want your IDE to help you out, it’s still ok to declare the type.
 
 ---
 
-# GStrings
-
-^ Groovy Strings.  Sort of like templating languages (like Smarties if you do PHP)
-
----
+## GStrings
 
 Java:
 
@@ -316,7 +326,11 @@ Java:
 	String yourBill = "You owe me " + amount;
 ````
 
----
+^ Strings in Java are pretty cool.
+
+—
+
+## GStrings
 
 Java:
 
@@ -332,6 +346,8 @@ This is totally reasonable for most things, but can get cumbersome quickly.
 
 ---
 
+## GStrings
+
 Java:
 
 ````java
@@ -343,6 +359,8 @@ Java:
 
 ---
 
+## GStrings
+
 Groovy:
 
 ````java
@@ -350,10 +368,13 @@ Groovy:
 	def yourBill = "You owe me $amount"
 ````
 
-^ Could also be written in Groovy, in line.
+^ So in Groovy, strings are a bit like a templating language. 
+Could also be written in Groovy, in line.
 If you want to get super fancy you can also write it like this:
 
 ---
+
+## GStrings
 
 Groovy:
 
@@ -368,6 +389,8 @@ Groovy:
 ^ super fancy, by joining a list of numbers
 
 ---
+
+## GStrings
 
 Groovy:
 
@@ -385,6 +408,8 @@ Groovy:
 
 ---
 
+## GStrings
+
 Groovy:
 
 ````java
@@ -397,35 +422,76 @@ String string =
 
 —
 
-# Arrays
+## Arrays
 
----
+Groovy:
 
+```java
+["Erin", "Jan", "Taylor" ]
+```
 ^ Lists are written like arrays.
 
-^ run some fun things to prove this in your emulator. Samples include
-["Erin", "Jan", "Taylor" ]
+—
+
+## Arrays
+
+```java
 ["Erin", "Jan", "Taylor" ].size()
-["Erin", "Jan", "Taylor"].length()
 ["Erin", "Jan", "Taylor" ].get(1)
 ["Erin", "Jan", "Taylor" ][1]
+````
+
+^ you can call normal ArrayList commands on them
+
+——
+
+## Arrays
+
+```java
+["Erin", "Jan", "Taylor" ].size()
+["Erin", "Jan", "Taylor" ].get(1)
+["Erin", "Jan", "Taylor" ][1]
+
 for (String string : [ "Erin", "Jan", "Taylor" ]) { println string.length() }
+````
+
+^ You can also call closure things on them.
 
 ---
+
+## Arrays
+
+```java
+["Erin", "Jan", "Taylor" ].size()
+["Erin", "Jan", "Taylor" ].get(1)
+["Erin", "Jan", "Taylor" ][1]
+
+for (String string : [ "Erin", "Jan", "Taylor" ]) { println string.length() }
+["Erin", "Jan", "Taylor" ].findAll( it % 2)…
+````
+
+^ You can also call closure things on them.
+
+---
+
 
 # Closures
 
 ^ Let's go over closures really fast (I promise that this will come back up later. Maybe to haunt you forever.)
 Especially since as Java programmers, most of us don't ever have to deal with closures.
-Unless you secretly do iOS programming on the side. In which case you're probably familiar with 
+Unless you secretly do iOS programming on the side or have started working with lambdas in Java 8. In which case you're probably familiar with 
 block syntax, which is essentially the same thing, just with a different name.
 
 ---
 
+## Closures
+
 Java:
 
 ````java
-new MyFancyNewObjectThatsReallyJustAMethodEnclosure().doSomething();
+int[] ints = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9};
+int[] odds = new OddFinder().findOdds(ints);
+
 ````
 
 ^ So in regular, plain old Java, if there's a method that you want to be called, you have to have an object to call 
@@ -438,6 +504,8 @@ won't be executed until it's called, but it's no longer encapsulated inside of a
 
 ---
 
+## Closures
+
 Groovy:
 
 ```` java
@@ -447,52 +515,58 @@ def odds = list.findAll { it % 2 }
 
 assert odds == [1, 3, 5, 7, 9]
 
+```
+
+---
+
+## Closures
+
+Groovy:
+
+```` java
+
+ { it % 2 }
+
+
 ````
 
 ^ The closure here is { it % 2 }.  That's an in line declared method.
 
-^Closures aren’t executed until they’re called, so they can be lazily evaluated. Let’s take a look at some lazily evaluated code.
-
-^[[ Run below in emulator ]]
-
-^Integer amount = 10
-BigDecimal tax = 0.15
-text = "Your account balance is ${account - account * tax}"
-deferredText = "Your account balance is ${-> account - account * tax}"
-
-^println text
-println deferredText
-
-^tax = 0.10
-
-^println text
-println deferredText
+^ Like functions, closures aren’t executed until they’re called.
 
 ---
+
+## Closures
 
 Groovy:
 
 ````java
 \\ Abbreviated with it
-["Erin", "Jan", "Taylor"]
-    .findAll{ it.size() >= 4 }
-    .each{ println it }
+
+ { it % 2 }
+
 ````
 
 ```java
 \\ Long form
-["Erin", "Jan", "Taylor"]
-	.findAll{ name -> name.size() >= 4 }
-	.each{ filteredName -> println filteredName }
+
+  { number -> number % 2 }
+
 ````
 
-^ It is a shortcut way of saying "the current item in the list that you're iterating over!"
+^ A final note on closures.  It is a shortcut way of saying "the current item in the list that you're iterating over!"
 
 ---
 
-# Groovy Objects
+## Closures
 
----
+Let’s run this!
+
+^ Run string closure example
+
+—
+
+## Groovy Objects
 
 Groovy:
 
@@ -513,37 +587,16 @@ assert myGroovyObject.color == 'fuschia'
 
 ^ You can declare classes in Groovy.  Properties on those classes become insta-setters/getters.
 
-^Be careful that you're not clobbering some property declared on a class.
-Ok, that's all well and good. What if I wanted to add some dynamic properties to that class?
+^ Ok, that's all well and good. What if I wanted to add some dynamic properties to that class?
 
 
 ---
 
+## Groovy Objects
+
 Groovy: 
 
-````java
-class ExpandoClass {
-
-    def propertyMissing(String name) {
-        println "Missing property $name"
-    }
-
-    def backingMap = [:]
-
-    Object getProperty( String property ) {
-      if( backingMap[ property ] == null ) {
-        propertyMissing( property )
-      }
-      else {
-        backingMap[ property ]
-      }
-    }
-
-    void setProperty( String property, Object value ) {
-      backingMap[ property ] = value
-    }
-}
-````
+Let’s make a dynamic properties object!
 
 ^ [[ POP THIS INTO YOUR TERMINAL ]]. Thank you StackOverflow.
 
@@ -584,7 +637,7 @@ Gradle is a project automation tool that builds upon the concepts of Apache Ant 
 #Gradle:
 Java builds without XML.
 
-^ Hooray!
+^ Hooray! XML, really with a powerful language backing it.
 
 —
 
@@ -599,7 +652,7 @@ Java builds without XML.
 
 - build.gradle
 
-^ The build file where your build configuration and logic go.  In Android apps, there are 2 of these, and we'll go over them.
+^ The build file where your build configuration and logic go.  In Android apps, there are 2 of these, and we'll go over them.  There’s a 1 to one correspondence between build.gradle files and Gradle Projects.
 
 ---
 
@@ -627,10 +680,6 @@ As long as you’re not checking this into your source control, it’s a great p
 ^ there are two build.gradle files : one in the project root. you can access every project from the root.
 ^ any project specific build files.  (the :app one)
 
-^ show off adding more projects to settings.gradle
-^ include ':app', ':app1'
-^ include ':app', ':nested:app1'
-^ run ./gradlew projects to show off how you set up different structures for these
 
 ---
 
@@ -648,7 +697,7 @@ org.gradle.configureondemand
 
 ^ these can also be passed into your build via the command line.  I find it easier to keep them here.
 
-^ the daemon is a long running process. This should be turned off on CI builds, but enabled locally
+^ the daemon is a long running process. This should be turned off on CI builds, but enabled locally.  ADD THIS TO YOUR BUILD!!
 
 ^ your java home directory.  the documentation claims that a 'reasonable default' is used if this isn't provided. we don't provide it.
 
@@ -700,13 +749,13 @@ Build an Android Project
 
 The task is the core building block of a build action.
 
-Build an Android Project
+Build an Android Project (AndroidPlugin Task)
 
 ```` bash
 	$ ./gradlew  assemble
 ````
 
-Show me all the Tasks in a project
+Show me all the Tasks in a project  (Gradle core Task)
 
 ````bash
 	$ ./gradlew tasks
@@ -825,7 +874,7 @@ task hello {
     }
 }
 
-task newHello << {
+task hello2 << {
     println "Hello Again!"
 }
 
@@ -839,8 +888,8 @@ task brokenHello {
 Gradle:
 
 ````java
-♤ ./gradlew newHello
-:app:newHello
+♤ ./gradlew hello2
+:app:hello2
 Hello Again!
 
 BUILD SUCCESSFUL
@@ -923,7 +972,7 @@ flag.  This will help speed up multi-project builds, as configuration happens EV
 	- Resolves Dependency Graph
 
 	
-^ So what happens during a configuraion phase?  The project objects are built.  including
+^ So what happens during a configuration phase?  The project objects are built.  including
 Resolving the dependency graph (making sure that all the libraries you've said are required aren't circular, and that they're available.)
 
 
@@ -976,7 +1025,9 @@ task brokenHello {
 }
 ````
 
-^ Now let's go back to that broken task.  What's happening here?
+^ Now let's go back to that broken task.  [[ RUN hello2 ]]
+
+^ What's happening here?
 
 ---
 
@@ -993,7 +1044,24 @@ will be executed in the configuration phase, not at execution.
 
 ---
 
-Debugging Tasks
+# Task Actions
+
+- Tasks are just a set of “actions”, which are closures
+
+—-
+
+
+# Task Actions
+
+- Tasks are just a set of “actions”, which are closures
+- Three ways to add an Action to a task:
+	- doFirst {}
+	- doLast {}
+	- leftShift {} / <<
+
+—
+
+## Debugging Tasks
 
 ````bash
 	./gradlew <command> --stacktrace --debug --info
@@ -1011,7 +1079,7 @@ that will make debugging a lot easier.  Stacktrace and info, I find, are the mos
 
 ---
 
-Project Components
+## Project Components
 
 - Tasks
 - Dependencies
@@ -1023,7 +1091,7 @@ Project Components
 
 ---
 
-Project Components
+## Project Components
 
 - _Tasks_
 - Dependencies
@@ -1036,71 +1104,19 @@ So let's move along to dependencies and configurations
 
 ---
 
-^ [[ GO TO ANDROID STUDIO TO DO THIS ]]
-
-^ [[ SHOW OFF THE AUTO ADDED DEPENDENCY ]]
-Dependencies are simply other projects or libraries that are needed to compile a project.
-Here's an example of a dependency that is the libs directory, only including .jar files. By default, Android Studio adds 
-this line to a new Gradle project build file for you.
-
-^ [[show off all the dependencies and configuations for the :app project]]
-^ ./gradlew dependencies (comes back null)
-^ ./gradlew :app:dependencies  (shows all dependencies for :app)
-Dependencies are specified for a specific configuration.
-
-^ [[ Add a second project, and then add it as a dependency in the first ]]
-^ So let's add another project, and set it as a dependency for my Android project.
-
-^ [[ Forget to add it to settings.gradle, run ./gradlew tasks ]]. should fail.
-^ it failed because it's not listed as a project in settings.gradle, so let's add it there. 
-
-^[[ add second project to settings.gradle.]]
-[[ Re run gradle task. Should succeed. ]]
-Cool, so now it's a dependency.
-
-^ let's add a configuration to specify dependencies for.
-^ ./gradlew :app2:dependencies  (shows all dependencies for :app2)
-^ app2 has no configurations. Let's add one.
-^ [[ Add libraries configuration for app2, show that it now picks up in the list ]]
-
-^ ok, that's cool. but what is it useful for?
-Imagine that you've got libraries that you want to be included both in your app build, and in your test compilations.
-Let's create a single configuration to specify dependencies for.
-^ configurations {
-    libraries {}
-    compile {
-        extendsFrom libraries
-    }
-    androidTestCompile {
-        extendsFrom libraries
-    }
-}
-
-^ and let's add a dependency to those configurations
- libraries 'com.etsy.android.grid:library:1.0.5'
-
----
+## Dependencies
 
 ````java
 dependencies {
-  //for dependencies found in artifact repositories you can use
-  //the group:name:version notation
   compile 'commons-lang:commons-lang:2.6'
   testCompile 'org.mockito:mockito:1.9.0-rc1'
+  compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
 
-  //map-style notation:
-  compile group: 'com.google.code.guice', name: 'guice', version: '1.0'
-
-  //declaring arbitrary files as dependencies
   compile files('hibernate.jar', 'libs/spring.jar')
 
-  //putting all jars from 'libs' onto compile classpath
   compile fileTree('libs')
-  
   compile project(:app2)
 }
-
-//taken from http://www.gradle.org/docs/current/dsl/org.gradle.api.artifacts.dsl.DependencyHandler.html
 ````
 
 ^ Here's some examples of different ways to add dependencies.  Note that the simple string declarations 
@@ -1108,10 +1124,20 @@ are from artifact repositories.
 
 ---
 
+## Configurations 
+
+- Groups of dependencies
+- Can extend each other
+
+^ Dependencies are grouped or assigned to blocks
+
+^ [[Quick example]]
+
+—
+
 ## Properties
 
-^ Cool. the last thing to go over is Gradle properties.  Remember the Expando Groovy example, of a class
-where you could add properties on the fly?
+^ Cool. the last thing to go over is Gradle properties.  Remember the Expando Groovy example, of a class where you could add properties on the fly?
 
 ---
 
@@ -1146,7 +1172,7 @@ the Expando class through the extension ext.
 
 ---
 
-Properties
+## Properties
 
 ````java
 project.ext.prop1 = "foo"
@@ -1160,7 +1186,8 @@ task doStuff {
 
 ---
 
-Properties
+## Properties
+
 
 ````java
 project.ext.prop1 = "foo"
@@ -1168,50 +1195,63 @@ task doStuff {
     ext.prop2 = "bar"
 }
 
-project.hasProperty['prop1']
+if (project.hasProperty['prop1’]) {
+	// Do something
+}
 
-````
+```
 
 ^ You can also check for a property, before calling it.
 
 ---
 
-^ let's explore.
-[[ ADD ON app2 ]]
-project.ext.prop1 = "Property Number One"
-./gradlew :app2:properties
+## Properties
 
-^ you can also add properties from the command line, or in gradle.properties
-task props << {
-    if (project.hasProperty("ZBestPropertyToHave")) {
-        println "You've got lots of $project.ZBestPropertyToHave"
-    }
-    else {
-        println "Hurry up and find yourself some properties!"
-    }
+```
+./gradlew :app:properties
+````
+
+^ Let’s see what properties are declared on the :app project. 
+
+---
+
+## Properties
+
+````
+/**
+ * Adds release signing properties to build if
+ * proper properties are present
+ */
+if (project.hasProperty('alias') && project.hasProperty('keystore') && 
+		project.hasProperty('keyPassword')
+        && project.hasProperty('storePassword')) {
+    project.android.signingConfigs.release.storeFile project.file(project.keystore)
+    project.android.signingConfigs.release.keyAlias project.alias
+    project.android.signingConfigs.release.storePassword = project.storePassword
+    project.android.signingConfigs.release.keyPassword = project.keyPassword
+} else {
+    project.android.buildTypes.release.signingConfig = null
 }
-./gradlew props
-./gradlew props -PZBestPropertyToHave=time
+```
+
+^ Here’s an example of how we use properties in our build files.
+
+—
+
+## Properties
+
+```
+$ ./gradlew assembleRelease \
+	-Palias=ALIAS  \
+	-Pkeystore=file.keystore \
+	-PkeyPassword=PASSWORD
+````
+
+^ And then to securely build your app, you just have to pass in your secrets at build time.
 
 
-^ And that just about wraps up our 30,000 foot dive into Gradle.
+——
 
----
-
-# Things not covered in this talk:
-- Task dependencies
-- Manipulating Files
-- Build Graph Hooks
-- The Android Plugin
-- Multiproject Build Logic
-- Plugins
-
-^ There were a lot of things that we didn't have time to jump into today.
-Here's a short list of those things.  As an aside, I'm presenting on Gradle Plugins
-at DroidCon London at the end of October.  It'll be a bit more in depth into the Gradle
-API than today.
-
----
 
 ## Further Reading:
 - Gradle Beyond the Basics
@@ -1220,12 +1260,25 @@ API than today.
 - Gradle Plugin User Guide - Android Tools Project Site 
 	http://tools.android.com/tech-docs/new-build-system/user-guide
 
+^ That just about wraps up our 30,000 foot dive into Gradle.
+
 ^ There is a *great* book on getting farther into Gradle tasks and files from O'Reilly media.  If you enjoyed this talk and want to dig further, I highly suggest you start here.
 ^ Gradle.org is a good source of information on their API
 ^ Finally, if you want to dig into the Android Plugin and configuration, the Android Tools Project Site is the place to go.
-It's not as well written as the frist two, but it's the best place to learn about the Android Plugin
+It's not as well written as the first two, but it's the best place to learn about the Android Plugin
 
 ---
+
+![left](droidcon_london.png)
+
+#[fit] DroidCon London 
+## October 31
+### __*Gradlin’: Plugging it in for Build Success*__
+
+^ If you’re going to be at DroidCon London, I’ll be giving a more in-depth talk on Gradle plugins.
+
+—-
+
 
 # Gradlin'
 
@@ -1233,7 +1286,7 @@ It's not as well written as the frist two, but it's the best place to learn abou
 
 #### Lisa Neigut __DroidCon NYC__ Sept 21
 
-^ Thank you.
+^ Thank you!
 
 ---
 
@@ -1367,13 +1420,3 @@ Setting up and configuring multi-project builds
 
 The projects(:projectName) block
 the allProjects() block
-
----
-
-- androidTestCompile includes compile
-- include an example of an @aar
-- what have i used gradle for?
-- Changes the version number (use real life examples)
-- more examples from real life
-- more syntactic examples in the
-- play with the display set up

@@ -6,6 +6,8 @@
 
 #### __*Jamie Huson*__ + __*Lisa Neigut*__ | __20 Sept 2014__
 
+^ Hi, Good morning. The title of this talk is getBounds(): the story of drawables and their view masters. 
+
 ---
 
 
@@ -14,11 +16,17 @@
 ![left|fit] (jamie.jpg)
 
 
-^ Hi, I'm Lisa I work at Etsy on the Android team. That's Jamie who works with me and he helped me put together this talk.  He wasn’t able to make it out to New York today to present with me.  
+^ To start, I’d like to introduce myself and my collaborator and co-worker Jamie Huson. We both work at Etsy on the Android apps. Etsy the online market for handmade and vintage goods that we make together.
 
-^ We both work at Etsy, the online market for handmade and vintage goods that we make together.
+^ Jamie wasn’t able to make it out to New York to present with me today, so it’s my pleasure to be presenting on behalf of both of us.
 
-^ Today, I’m talking about Drawables.  The inspiration from this talk comes from another very good talk that Cyril Mottier gave on Mastering Android Drawables at Devoxx 2013. This talk aims to build on what Cyril laid out and go a bit more in-depth into the APIs / how to actually implement a custom drawable, and how they relate to a View’s measurement/layout/draw cycles.  If you haven’t seen it yet, I highly recommend checking it out.
+
+—
+
+#[fit]Drawables!
+
+
+^ So let’s talk about Drawables.  The inspiration from this talk comes from Cyril Mottier’s excellent Mastering Android Drawables talk at Devoxx 2013. Today we’ll pick up a bit from where Cyril left off and take a deep dive into the specifics of the drawables APIs.  We’ll talk about how they relate to a View’s measurement/layout/draw cycles, and then go over where Drawables are headed for L.
 
 ^ So let’s get started.
 
@@ -46,9 +54,13 @@
 - XML
 
 ^ Ok, so what makes Drawables awesome? Pushing pixels to the screen is gratifying and fun! 
+
 ^ Drawables handle state changes for user feedback, essential to a good UX
+
 ^ Its focused Java code that separates the drawing logic from the other View logic
+
 ^ XML themes/styles combined with drawables means less code
+
 ^ Ok, so what Drawables do we get from the SDK?
 
 ---
@@ -57,8 +69,7 @@
 
 ![right|80%] (nine_patch.png)
 
-^ A drawable can be a 9 patch. That's a PNG that has a 1 pixel border specifying a stretchable region
-^ and padding.
+^ A drawable can be a 9 patch. That's a PNG that has a 1 pixel border specifying a stretchable region and padding.
 
 ---
 
@@ -75,6 +86,7 @@
 ![right|25%] (state-list-drawable-sample.png)
 
 ^ Drawables are flexible and useful.  You can nest different drawables into each other.
+
 ^ It's a nice declarative approach to handling state changes.
 
 ---
@@ -95,17 +107,20 @@
 
 ---
 
+#So many options…
+
 ![60%] (drawable_hierarchy.png)
 
-^ These are some of the drawables that come with the Android SDK, which means you can create them in XML files and then assign them to views also in XML.
-^ Now, we want to build custom drawables that draw even fancier things. Such as ...
+^ The built in drawables are quite extensive.  So why extend it?
+
+^ Let’s take a look at what you can do with custom drawables.
 
 ---
 
 ## BadgeDrawable
 ![fit|right] (badge_drawable.png)
 
-^ At Etsy, we use Jesse Hendrickson’s BadgeDrawable class. It displays a number over 
+^ Like Jesse Hendrickson’s BadgeDrawable class. It displays a number over 
 a circle drawable.  This view is a single TextView, who’s right compoundDrawable has been
 set to a BadgeDrawable instance. To update the number, we just change the number on the drawable.
 
@@ -117,14 +132,12 @@ set to a BadgeDrawable instance. To update the number, we just change the number
 
 ^ Another custom Drawable that we’ve been using internally is an Font Drawable.
 
-^ From a very high level, this drawable type lets us take the SVG text character from a font file and turn it into a drawable type.  
+^ From a very high level, this drawable type lets us take the SVG text character from a font file and turn it into a drawable.  
 
-^ We can then render those drawables into any colors or sizes that we want and the come out pixel perfect, independent of your screen density.  Our designers love them.
 
-^ A lot of what we’ll talk about today comes from my experience creating this custom drawable type for fonts.
+^ We can then render those drawables into any colors or sizes that we want and the come out pixel perfect, independent of your screen density.  Our designers are big fans.
 
 —
-
 
 ##IconDrawable
 ![fit|right] (icon_drawable.png)
@@ -132,9 +145,15 @@ set to a BadgeDrawable instance. To update the number, we just change the number
 ![100%|right](icon_documentation.png)
 
 
+
+^ A lot of what we’ll talk about today comes from my things I learned while creating this custom drawable type for fonts.
+
+
 ---
 
 # Custom Drawables
+
+^ cool. so how do these work?
 
 ---
 
@@ -159,8 +178,8 @@ set to a BadgeDrawable instance. To update the number, we just change the number
     ...
 ````
 
-^ So built-in drawables you can create like this. You save it in a drawables folder
-and then you can reference it in a view, set it as a background for a view, etc, like this.
+^ So if I was creating a built-in drawables I may do something like this. I’d create an XML file in a drawables folder
+and then reference it in a view, set it as a background for a view, etc, like this.
 
 ---
 
@@ -197,7 +216,9 @@ layout.xml
 ---
 ## Custom Drawable
 
-custom_drawable.xml
+/res
+../drawable
+  ..custom_drawable.xml
 
 ````xml
 <custom-drawable xmlns:android="http://schemas.android.com/apk/res/android"
@@ -309,7 +330,9 @@ the Drawable class.  Anything other than a built-in drawable will crash your app
 ````
 
 ^ So any custom drawables that we make will have to be instantiated via their Java class and assigned to the view either through a custom view layout or through set up on view construction.  
+
 ^ So it's not as easy to maintain as the XML way but we can get away with it. Plus we want the custom drawing.
+
 ^ Ok, let's dive into building custom Drawables.
 
 ---
@@ -436,7 +459,8 @@ Default: returns 0
 `getConstantState() and mutate()`
 
 ^ By default, every drawable inflated from the same resource shares the same state, called the ConstantState
-^ When you modify the state of one instance, all the other instances will get the same modification.
+
+^ When you modify the state of one instance of a drawable, all the other instances inflated from the same resources will get the same modification.
 
 —
 
@@ -454,6 +478,8 @@ Default: returns 0
 - Basically creates an ‘independent’ state.
 
 ![right|65%] (constant-state-mutate.png)
+
+^ mutate allows you to create a new, independent constant state value for an instance of a drawable.
 
 ^ This is useful when you want to modify properties of drawables loaded from resources
 
@@ -653,9 +679,7 @@ Views assume that the drawable knows what size it wants to be before the bounds 
 
 Every View computes the drawable’s bounds differently.
 
-^ For the drawable in an ImageView, if you pass back bounds of -1, it will set the bounds to be the maximum allowed size for the view.
-
-^ in a compound view, it sets the bounds to be 0.
+^ Next every view computes its bounds differently
 
 —
 
@@ -667,7 +691,7 @@ ColorDrawable.java
 getIntrinsicHeight() { returns -1; }
 ```
 
-^ For the drawable in an ImageView, if you pass back bounds of -1, it will set the bounds to be the maximum allowed size for the view.
+^ so let’s consider the what happens when a drawable passes back a height and width of -1, which means it has no set dimensions.
 
 —
 
@@ -700,7 +724,7 @@ CompoundButton
 ImageView 
 `setBounds(leftMax, rightMax, topMax, bottomMax)`
 
-^ For the drawable in an ImageView, if you pass back bounds of -1, it will set the bounds to be the maximum allowed size for the view.
+^ For the drawable in an ImageView, if you pass back dimensions of -1, the imageView will set the bounds to be the total calculated size of the view.
 
 —
 
@@ -755,7 +779,7 @@ ImageView
 ^ So Drawable has been fundamentally altered in L. But let's try and bring this to our Pre-L apps. 
 ^ Drawing the ripples is fairly straight-forward. You're drawing two circles.
 ^ One covers the background and the other follows the TouchEvents. 
-^ We won't dive into that because once L is open sourced we can get the animation timings and effects exact. 
+^ We won't dive into how to draw the circles because once L is open sourced we can get the animation timings and effects exact. 
 ^ For now let's look at the two major features which is the Hotspot and the Mask.
 
 ---

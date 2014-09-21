@@ -17,17 +17,3 @@ allprojects {
         jcenter()
     }
 }
-
-task hello {
-    doLast {
-        println "Hello DroidCon!"
-    }
-}
-
-task hello2 << {
-    println "hello Again"
-}
-
-task helloBroken {
-    println "Hello, I'm broken"
-}

@@ -1,0 +1,106 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 \
+\
+GROOVY::\
+\
+["Erin", "Jan", "Taylor"].findAll\{ it.size() >= 4 \}.each\{ println it \}\
+\
+\
+amount = 10\
+tax = 0.15\
+text = "Your account balance is $\{account - account * tax\}"\
+deferredText = "Your account balance is $\{-> account - account * tax\}"\
+\
+println text\
+println deferredText\
+\
+tax = 0.10\
+\
+println text\
+println deferredText\
+\
+\
+class AGroovyObject \{\
+	String color\
+\}\
+\
+new AGroovyObject(color: \'93fuscia\'94)\
+\
+class ExpandoClass \{\
+\
+    def propertyMissing(String name) \{\
+        println "Missing property $name"\
+    \}\
+\
+    def backingMap = [:]\
+\
+    Object getProperty( String property ) \{\
+      if( backingMap[ property ] == null ) \{\
+        propertyMissing( property )\
+      \}\
+      else \{\
+        backingMap[ property ]\
+      \}\
+    \}\
+\
+    void setProperty( String property, Object value ) \{\
+      backingMap[ property ] = value\
+    \}\
+\}\
+\
+\
+GRADLE:::\
+ \
+ show off adding more projects to settings.gradle\
+ include ':app', ':app1'\
+ include ':app', ':nested:app1'\
+ run ./gradlew projects to show off how you set up different structures for these\
+\
+\
+task hello \{\
+	doLast \{\
+		println \'93HelloDroidConNYC!\'94\
+	\}\
+\}\
+\
+task hello2 << \{\
+	println \'93HelloDroidConNYC, again!\'94\
+\}\
+\
+task brokenHello \{\
+	println \'93Hello \'97 Too soon!!\'94\
+\}\
+\
+\
+\
+ ./gradlew dependencies\
+ ./gradlew :app:dependencies\
+\
+ let's add a configuration to specify dependencies for.\
+ ./gradlew :app:dependencies  (shows all dependencies for :app)\
+\
+configurations \{\
+    libraries \{\}\
+    compile \{\
+        extendsFrom libraries\
+    \}\
+    unitTests \{\
+        extendsFrom libraries\
+    \}\
+\}\
+\
+dependencies \{\
+	 libraries 'com.etsy.android.grid:library:1.0.5'\
+\}\
+\
+$ ./gradlew :app:dependencies\
+\
+---\
+\
+\
+}
