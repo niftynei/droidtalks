@@ -247,9 +247,39 @@ Groovy
 
 ^ Becomes this.  I like being explicit, but this is a way that you can do this.
 
+---
+
+## Syntax
+
+Groovy
+
+````
+	.findAll { it.size() >= 4 }
+
+````
+
+^ So if you remember this from the string example.
+
+---
+
+## Syntax
+
+Groovy
+
+````	
+	.findAll { it.size() >= 4 }
+
+	.findAll({ it.size() >= 4 })
+
+````
+
+^ It’s actually an abbreviation.  We’ve taken out the parens that enclose the 
+closure that you’re passing in as a method param.
+
 ^ Cool, so Groovy requires a smidge less typing that Java.
 
 ---
+
 
 ## Null Checks
 
@@ -467,7 +497,7 @@ for (String string : [ "Erin", "Jan", "Taylor" ]) { println string.length() }
 ["Erin", "Jan", "Taylor" ][1]
 
 for (String string : [ "Erin", "Jan", "Taylor" ]) { println string.length() }
-["Erin", "Jan", "Taylor" ].findAll( it % 2)…
+["Erin", "Jan", "Taylor" ].each { println it.length() }	
 ````
 
 ^ You can also call closure things on them.
@@ -605,9 +635,9 @@ discussion.
 
 --- 
  
-![right|fit](groovy_logo.png)
+![right|200%](groovy_logo.png)
 
-## And that's Groovy
+## Ain’t it Groovy?
 
 - Syntax
 - Null Checks
@@ -683,7 +713,7 @@ As long as you’re not checking this into your source control, it’s a great p
 
 ---
 
-gradle.properties
+## gradle.properties
 
 ````
 org.gradle.daemon=true
@@ -737,7 +767,7 @@ The task is the core building block of a build action.
 
 The task is the core building block of a build action. 
 
-Build an Android Project
+- Build an Android Project
 
 ```` bash
 	$ ./gradlew  assemble
@@ -749,13 +779,13 @@ Build an Android Project
 
 The task is the core building block of a build action.
 
-Build an Android Project (AndroidPlugin Task)
+- Build an Android Project
 
 ```` bash
 	$ ./gradlew  assemble
 ````
 
-Show me all the Tasks in a project  (Gradle core Task)
+- Show me all the Tasks in a project
 
 ````bash
 	$ ./gradlew tasks
@@ -813,10 +843,6 @@ calling the header task.
 
 ---
 
-^ ok, so let's write our own task
-
----
-
 Groovy / Gradle:
 
 ````java
@@ -827,7 +853,7 @@ Groovy / Gradle:
 	}
 ````
 
-^ Let's write a task to commemorate DroidConNYC
+^ Let's write a task to say hello DroidConNYC
 
 ---
 
@@ -851,7 +877,7 @@ Run:
 
 And we get...
 
-````
+````java
 ♤ ./gradlew hello
 :app:hello
 Hello DroidConNYC!
@@ -862,55 +888,13 @@ Total time: 11.075 secs
 ````
 
 ^ cool. let's try some other things. 
+[[ GO TO TERMINAL HERE ]]
 
 ---
 
 Gradle:
 
 ````java
-task hello {
-    doLast {
-        println "Hello DroidConNYC!"
-    }
-}
-
-task hello2 << {
-    println "Hello Again!"
-}
-
-task brokenHello {
-    println "Hello -- Too Soon!!"
-}
-````
-
----
-
-Gradle:
-
-````java
-♤ ./gradlew hello2
-:app:hello2
-Hello Again!
-
-BUILD SUCCESSFUL
-
-Total time: 11.1 secs
-
-````
-
----
-
-Gradle:
-
-````java
-♤ ./gradlew newHello
-:app:newHello
-Hello Again!
-
-BUILD SUCCESSFUL
-
-Total time: 11.1 secs
-
 ♤ ./gradlew brokenHello
 Hello -- Too Soon!!
 :app:brokenHello UP-TO-DATE
@@ -1054,7 +1038,7 @@ will be executed in the configuration phase, not at execution.
 # Task Actions
 
 - Tasks are just a set of “actions”, which are closures
-- Three ways to add an Action to a task:
+- Three ways to add an Action (closure) to a task:
 	- doFirst {}
 	- doLast {}
 	- leftShift {} / <<

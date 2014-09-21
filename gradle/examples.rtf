@@ -11,10 +11,12 @@ GROOVY::\
 ["Erin", "Jan", "Taylor"].findAll\{ it.size() >= 4 \}.each\{ println it \}\
 \
 \
+CLOSURE EXAMPLE:\
+\
 amount = 10\
 tax = 0.15\
-text = "Your account balance is $\{account - account * tax\}"\
-deferredText = "Your account balance is $\{-> account - account * tax\}"\
+text = "Your account balance is $\{amount - amount * tax\}"\
+deferredText = "Your account balance is $\{-> amount - amount * tax\}"\
 \
 println text\
 println deferredText\
