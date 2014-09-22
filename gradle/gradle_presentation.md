@@ -4,12 +4,12 @@
 
 ## __Nuts and bolts__
 
-#### Lisa Neigut __DroidCon NYC__ 21 Sept 2014
+#### Lisa Neigut __*DroidCon NYC*__ 21 Sept 2014
 
 ——
 
-##[fit] Hello, I'm Lisa.
-###[fit] I work on the Android team at Etsy
+##[fit] Hello, *I’m Lisa*
+###[fit] I work on the Android team at *Etsy*
 ![](android_team.jpg)
 
 ^ In addition to working on our app, I write and maintain our project Gradle scripts, 
@@ -91,9 +91,18 @@ It runs on the Java Virtual Machine.
 
 --- 
 
-![200%](hydra.jpg)
+![left|250%](hydra.jpg)
 
 ^ According to a thing I read on the internet, the author of Groovy probably wouldn’t have written Groovy if he had known that Scala existed.
+
+
+--- 
+
+![250%](hydra.jpg)
+![200%](ardentlycrafted.png)
+
+^ This is a paper Doll from ArdentlyCrafted’s shop on Etsy
+
 
 ---
 
@@ -314,11 +323,9 @@ Groovy
 	activity?.finish()
 ````
 
-^ Put a Question Mark before the function call. The technical term for this is the safe navigation operator.  
+^ Put a Question Mark before the function call. This is the safe navigation operator.  
 
 ^ I call it the Destroyer of NPEs. 
-
-^ [[ QUICK DEMO ]]
 
 ---
 
@@ -1000,8 +1007,8 @@ BUILD SUCCESSFUL
 Groovy:
 
 ````java
-task newHello << {
-    println "Hello Again!"
+task hello2 << {
+    println "Hello Again!”
 }
 
 task brokenHello {
@@ -1233,6 +1240,16 @@ $ ./gradlew assembleRelease \
 
 ^ And then to securely build your app, you just have to pass in your secrets at build time.
 
+——
+
+# Nuts and Bolts
+- Groovy
+- Gradle
+	- Tasks
+	- Build Phases
+	- Projects
+
+^ Cool, that’s all we really have time to talk about today.
 
 ——
 

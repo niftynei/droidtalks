@@ -17,3 +17,16 @@ allprojects {
         jcenter()
     }
 }
+
+task hello {
+    doLast {
+        println "Hello!!!"
+    }
+}
+ task hello2 << {
+    println "hello again!"
+ }
+
+task brokenTask {
+    println "i'm broken : ("
+}
