@@ -8,14 +8,6 @@
 
 ^ Hello, bonjour.  Just to make sure everyone is in the right place, this session we will be talking about drawables.
 
----
-
-
-![right|fit] (lisa.jpg)
-
-![left|fit] (jamie.jpg)
-
-
 ^ I am Lisa Neigut.  I work at Electric Objects, where we're building a computer for art.  This is Jamie Huson.  Jamie works at Etsy, the online market for handmade and vintage goods that we make together.
 
 —
