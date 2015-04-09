@@ -4,9 +4,9 @@
 
 # [fit] The story of Drawables and their View masters
 
-#### __*Jamie Huson*__ + __*Lisa Neigut*__ | __20 Sept 2014__
+#### __*Jamie Huson*__ + __*Lisa Neigut*__ | __10 Avril 2015__
 
-^ Hi, Good morning. The title of this talk is getBounds(): the story of drawables and their view masters. 
+^ Hello, bonjour.  Just to make sure everyone is in the right place, this session we will be talking about drawables.
 
 ---
 
@@ -16,52 +16,62 @@
 ![left|fit] (jamie.jpg)
 
 
-^ To start, I’d like to introduce myself and my collaborator and co-worker Jamie Huson. We both work at Etsy on the Android apps. Etsy the online market for handmade and vintage goods that we make together.
-
-^ Jamie wasn’t able to make it out to New York to present with me today, so it’s my pleasure to be presenting on behalf of both of us.
-
+^ I am Lisa Neigut.  I work at Electric Objects, where we're building a computer for art.  This is Jamie Huson.  Jamie works at Etsy, the online market for handmade and vintage goods that we make together.
 
 —
 
 #[fit]Drawables!
 
 
-^ So let’s talk about Drawables.  The inspiration from this talk comes from Cyril Mottier’s excellent Mastering Android Drawables talk at Devoxx 2013. Today we’ll pick up a bit from where Cyril left off and take a deep dive into the specifics of the drawables APIs.  We’ll talk about how they relate to a View’s measurement/layout/draw cycles, and then go over where Drawables are headed for L.
+^ So. Drawables.  A few years ago at Devoxx 2013, an Android developer Cyril Mottier gave an excellent talk on Drawables, entitled Mastering Android Drawables.
 
-^ So let’s get started.
+^ In many ways, that talk was the inspiration for this one.  
+
+^ I'd like to pick up from where Monsieur Mottier left off. Let's get into the specifics of the drawables APIs.
+
+^ First I'll talk a bit about how they fit into a View’s measurement/layout/draw cycles. Then Jamie will take us through what's changed in Drawable with Lollipop's release.
 
 ---
 
-# What is a Drawable?
+###  "something that can be drawn."
 
----
+### __-Drawable.java JavaDocs__
 
-### "A drawable is a positioned entity 
-### that is to be drawn on a canvas." 
+/
+
+### "a positioned entity
+### that is to be drawn on a canvas."
 
 ### __-Cyril Mottier__
 
+^ What is a drawable?
 
-^ Borrowing Cyril’s definition: A drawable is a positioned entity that is to be drawn on a canvas.
+^ Cyril’s definition from Mastering Drawables is hard to improve on: A drawable is a positioned entity that is to be drawn on a canvas.
 
 ----
 
 # What Makes Drawables Awesome:
 - Drawing is fun!
 - State Changes
-- Total Separation of View Logic from Code
-- Focused code
+- Separation of View Logic from Code
 - XML
+- Versatility
 
-^ Ok, so what makes Drawables awesome? Pushing pixels to the screen is gratifying and fun! 
+^ Drawables are Awesome.  Especially if you like drawing things to the screen!
 
 ^ Drawables handle state changes for user feedback, essential to a good UX
 
-^ Its focused Java code that separates the drawing logic from the other View logic
+^ It's very focused Java code that separates the drawing logic from the other View logic
 
-^ XML themes/styles combined with drawables means less code
+^ Declare them in XML, use them from XML in themes/styles (less Java)
 
-^ Ok, so what Drawables do we get from the SDK?
+^ Versatile - plug and play with a variety of Views
+
+---
+
+![60%] (drawable_hierarchy.png)
+
+^ Drawables come in lots of shapes, sizes, and types.
 
 ---
 
@@ -69,7 +79,9 @@
 
 ![right|80%] (nine_patch.png)
 
-^ A drawable can be a 9 patch. That's a PNG that has a 1 pixel border specifying a stretchable region and padding.
+^ A drawable can be a 9 patch. A 9 patch is a PNG with stretchable regions.
+
+^ A 1 pixel border marks the stretchable regions.
 
 ---
 
@@ -77,17 +89,9 @@
 
 ![right|25%] (shape-sample.png)
 
-^ It can be a shape that's specified in XML. It allows rectangle, line, oval, or a ring.
+^ Shape Drawables are simple geometric shapes, usually with some shading or coloring defined.  
 
----
-
-## StateListDrawable 
-
-![right|25%] (state-list-drawable-sample.png)
-
-^ Drawables are flexible and useful.  You can nest different drawables into each other.
-
-^ It's a nice declarative approach to handling state changes.
+^ These are typically defined in XML.
 
 ---
 
@@ -95,7 +99,7 @@
 
 ![right|25%] (bitmap-sample.png)
 
-^ BitmapDrawable is used everywhere and has some great options like repeating a pattern on a background
+^ BitmapDrawable is a wrapper around a native bitmap.  A BitmapDrawable is the drawing engine, so to speak, for ImageViews.  You can do some nifty things, like tiling with these.
 
 ---
 
@@ -103,171 +107,179 @@
 
 ![right|25%] (layer-list-sample.png)
 
-^ Stack Drawables on top of each other in different ways!
+^ Layer Drawables are a set of drawables. Acts a lot like a FrameLayout, except for Drawables, and you can offset them in the stack.
 
 ---
 
-#So many options…
 
-![60%] (drawable_hierarchy.png)
+## StateListDrawable
 
-^ The built in drawables are quite extensive.  So why extend it?
+![right|25%] (state-list-drawable-sample.png)
 
-^ Let’s take a look at what you can do with custom drawables.
+^ State List Drawables is another drawable set.  Easy way to specify changes to a view during state changes (pressed, disabled, etc.)
+
+---
+
+# Custom Drawables
+
+^ The built in drawables are quite extensive, but we can do more.
+
+^ here's a few custom drawables I've used in projects.
 
 ---
 
 ## BadgeDrawable
 ![fit|right] (badge_drawable.png)
 
-^ Like Jesse Hendrickson’s BadgeDrawable class. It displays a number over 
-a circle drawable.  This view is a single TextView, who’s right compoundDrawable has been
-set to a BadgeDrawable instance. To update the number, we just change the number on the drawable.
+^ Jesse Hendrickson’s BadgeDrawable class is a useful one. This drawable displays a character on top of a circle drawable.  
+
+^ In this example, this is a single TextView, with a BadgeDrawable set as the right compoundDrawable. Way to keep that view hierarchy thin.
+
+^ To update the number, we set a property on the drawable.
 
 ——
 
-##IconDrawable
+##FontDrawable
 ![fit|right] (icon_drawable.png)
 
+^ Another custom Drawable that Etsy uses is a 'Font Drawable'.
 
-^ Another custom Drawable that we’ve been using internally is an Font Drawable.
+^ This drawable type takes a character from a font file and turns it into a drawable.  It's a single character TextView, except more flexible and way more awesome becuase it's a drawable.
 
-^ From a very high level, this drawable type lets us take the SVG text character from a font file and turn it into a drawable.  
+^ [[ NEXT SLIDE NOW! ]]
 
+---
 
-^ We can then render those drawables into any colors or sizes that we want and the come out pixel perfect, independent of your screen density.  Our designers are big fans.
-
-—
-
-##IconDrawable
+##FontDrawable
 ![fit|right] (icon_drawable.png)
 
 ![100%|right](icon_documentation.png)
 
 
+^ Just like any text, we can use any color or size that the designs call for. Designers are big fans of them, since it cuts down on the number of assets that need clipping.
 
-^ A lot of what we’ll talk about today comes from my things I learned while creating this custom drawable type for fonts.
+^ A lot of what we’ll talk about today comes from things I learned while creating this custom drawable type for fonts.
 
-
----
-
-# Custom Drawables
-
-^ cool. so how do these work?
+^ I think we can all agree that drawables are pretty sweet.
 
 ---
 
-# Using built-in Drawables
+![200%](draw_all_the_things.jpg)
+
+^ so how do we make them?
+
+---
 
 /res
 ../drawable
   .. layered_drawable.xml
 
-````xml
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Transparent top line for evenness -->
-    <item>
-        <shape android:shape="oval">
-            <solid android:color="@color/transparent"/>
-            <corners android:radius="@dimen/gen_avatar_corners_small"/>
-            <padding
-                android:top="@dimen/gen_avatar_border_shadow"/>
-        </shape>
-    </item>
-    <!-- Light grey -->
-    ...
-````
 
-^ So if I was creating a built-in drawables I may do something like this. I’d create an XML file in a drawables folder
-and then reference it in a view, set it as a background for a view, etc, like this.
+^ If you were creating a drawable from scratch, you may do something like this.
+
+^ First you create an XML file in the drawables resource folder.
 
 ---
 
-# Using built-in Drawables
-
-layered_drawable.xml
-
 ````xml
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Transparent top line for evenness -->
     <item>
         <shape android:shape="oval">
-            <solid android:color="@color/transparent"/>
-            <corners android:radius="@dimen/gen_avatar_corners_small"/>
-            <padding
-                android:top="@dimen/gen_avatar_border_shadow"/>
+            <solid android:color="@color/purple"/>
         </shape>
     </item>
-    <!-- Light grey -->
     ...
 ````
+
+^ Then you'd make yourself a drawable.
+
+^ Here's the begining of layer list drawable.
+
+^ The first drawable is a shape drawable. it's a purple oval.
+
+---
 
 layout.xml
 
 ```xml
-<View 
+<TextView
 	...
-	android:background="@drawable/layered_drawable"
-/>
+	android:background="@drawable/layered_drawable"/>
 ````
 
-^ So what happens if I make a custom drawable?
+^ Then we could set that drawables file as a background attribute for a view, from XML.
+
+^ That's it.  There's one thing you may notice about this process...
 
 ---
-## Custom Drawable
+
+#[fit] TOTAL JAVA CODE WRITTEN: *$0*
+
+^ I didn't have to write any Java.
+
+^ Let's do the same thing for a custom drawable type now.
+
+---
+
+## Drawable Redux, vCustom.0
+
+---
 
 /res
 ../drawable
   ..custom_drawable.xml
 
+^ Same as before, let's make an XML file for it in the drawable resources directory.
+
+---
+
 ````xml
-<custom-drawable xmlns:android="http://schemas.android.com/apk/res/android"
+<com.droidcon.drawables.custom
+  xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	app:icon="@id/ic_etsy_e"
 	app:color="@color/etsy_orange" >
-</custom-drawable>
+</com.droidcon.drawables.custom>
 ````
 
-^ let's say I've got a custom drawable. It has a few properties, and I'm setting the color onto it.
+^ I'm going to use a custom XML tag and some custom attributes for it.
+
+^ I'm not showing the Java code for this, just yet, we'll get there in a bit.
 
 ----
-
-## Custom Drawable
-
-custom_drawable.xml
-
-````xml
-<custom-drawable xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	app:icon="@id/ic_etsy_e"
-	app:color="@color/etsy_orange" >
-</custom-drawable>
-````
 
 layout.xml
 
 ```xml
-<View 
+<TextView
 	...
-	android:background="@drawable/custom_drawable”
-/>
-````
+	android:background="@drawable/custom_drawable"/>
+```
 
-^ Just like the previous item, then you set it as the background for you View
+^ Let's update the TextView in the layout file, to use my custom drawable.
 
-^ If you ignore the warnings that Android Studio gives you for this, and just go ahead and build and deploy the project, it will compile and the app will launch.
+^ Android Studio may give you some warnings, but ignore them. You can build and launch the app normally.
 
-—
+---
+
+![](crash.png)
+
+^ [[HORRIBLE SHRIEKING STATIC CRASH NOISE. LIKE A MODEM ATE A HAMSTER]]
+
+^ At this point, I need to confess something.  
+
+^ I lied. I didn't write the Java class for it.
+
+—-
 
 ##Runtime Error
 
 ````
-Caused by: org.xmlpull.v1.XmlPullParserException: 
+Caused by: org.xmlpull.v1.XmlPullParserException:
 	Binary XML file line #2: __invalid drawable tag custom__
 ````
 
-^ Only to crash, with a runtime error that looks something like this.
-Ok, so what's going on here?
+^ But it turns out that that doesn't fucking matter.
 
 ---
 
@@ -277,36 +289,42 @@ Ok, so what's going on here?
 	public static Drawable createFromXmlInner(Resources r, XmlPullParser parser, AttributeSet attrs)
 	throws XmlPullParserException, IOException {
 		Drawable drawable;
+````
 
+^ I traced this crash back to an SDK class, Drawable.java.
+
+^ there's a method called createInnerXml.'  This is what gets called to inflate the drawable XML file we defined earlier.
+
+---
+
+```java
 		final String name = parser.getName();
 
 		if (name.equals("selector")) {
 			drawable = new StateListDrawable();
-		} else if (name.equals("level-list")) {
-			drawable = new LevelListDrawable();
 		} else if (name.equals("layer-list")) {
 			drawable = new LayerDrawable();
-		} else if (name.equals("transition")) {
-			drawable = new TransitionDrawable();
-		} else if (name.equals("color")) {
-			drawable = new ColorDrawable();
 		} else if (name.equals("shape")) {
 			drawable = new GradientDrawable();
-		}
-		...
+		} else if ...
+
+```
+
+^ this method starts going through a list, looking for the XML name you provided.
+
+---
+
+```java
+   ...
 		} else {
 			throw new XmlPullParserException(parser.getPositionDescription() +
 			": invalid drawable tag " + name);
 		}
+```
 
-		drawable.inflate(r, parser, attrs);
-		return drawable;
-	}
+^ and when it invariably can't find it, we throw a hissy fit.'
 
-````
-
-^ It turns out that the custom drawable types that are permitted are hard coded into
-the Drawable class.  Anything other than a built-in drawable will crash your app.
+^ I mean XmlPullParseException.
 
 ---
 
@@ -316,24 +334,24 @@ the Drawable class.  Anything other than a built-in drawable will crash your app
 
 ![75%] (android-deal-with-it.gif)
 
-^ overriding this static call to inject your own drawable type is left as an exercise for the reader
+^ soooooo. defining Custom Drawables via XML isn't an option.  But there's good news.
+
+^ Weve still got Java.
 
 ---
-
-# Good ol' Java
 
 ````java
     CustomDrawable drawable = new CustomDrawable();
     drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.DST);
     mView.setBackground(drawable);
-            
+
 ````
 
-^ So any custom drawables that we make will have to be instantiated via their Java class and assigned to the view either through a custom view layout or through set up on view construction.  
+^ Custom Drawables are instantiated and assigned to views in Java.
 
-^ So it's not as easy to maintain as the XML way but we can get away with it. Plus we want the custom drawing.
+^ Admittedly, not as clean as using just XML.  But drawables are totally worth it. ;D
 
-^ Ok, let's dive into building custom Drawables.
+^ Now that we know how to use them, and some limitations, let's see how you'd write them.
 
 ---
 
@@ -341,48 +359,45 @@ the Drawable class.  Anything other than a built-in drawable will crash your app
 
 ---
 
-## Methods to @Override:
+```java
+public class NinjaDrawable extends ColorDrawable {
+```
+
+^ A custom drawable is a subclass of the abstract class Drawable
+
+^ any time I subclass something, i try to look at what methods absolutely need to be overridden.
+
+^ here's my short list of things you must override to get a working drawable going.
+
+---
+
+## Methods you definitely want to @Override
 
 - draw(Canvas canvas)
-- getOpacity()
-- getIntrinsicHeight/Width()
-- getMinimumHeight/Width()
-- getConstantState() and mutate()
-
-^ so let’s go through a few of the API calls that are key to creating a custom drawable.
-This is by no means a comprehensive list.
 
 ——
 
 `@Override`
-`draw(Canvas canvas)`
-
----
-
-`@Override`
-`draw(Canvas canvas)`
+`draw(Canvas canvas)`  (onDraw)
 
 - Just like a View's drawing.
-- Call ```canvas.drawSomething(Paint)``` methods.
-- Transformations, Rotations, Shaders all still apply.
 - Use `getBounds()` to determine drawing area
 
 ^ Fairly self explanatory. Just like a normal view. You call the draw methods on the canvas with a Paint object.
 ^ You can do transformations, rotations, etc on the canvas and use Shaders on Paint.
-^ You should use the bounds of the view as set here.
+^ You should use the bounds that were set by the View. More on this later.
 
 ---
 
-`@Override`
-`getOpacity()`
+## Methods, good to know
 
+- getOpacity()
+- getIntrinsicWidth()
+- getMinimumWidth()
 
 ---
 
-`@Override`
 `getOpacity()`
-
-ColorDrawable.java
 
 ````java
     public int getOpacity() {
@@ -397,66 +412,62 @@ ColorDrawable.java
 ````
 
 
-^ This is best explained by this snippet from Color Drawable.
+^ Opacity is best explained by this snippet from Color Drawable.
 
-^If we grab the alpha value out of the color that we’ve set
-we return OPAQUE for an alpha value of 255 (1f)
-If it's see alpha value of 0, this drawable is transparent
-Any other alpha value, you're TRANSLUCENT.
+^ It returns the correct PixelFormat based on the colors alpha channel.
 
-^The other option is PixelFormat.UNKNOWN
+^ Used by the graphics pipeline.
 
 ---
 
-`@Override`
-`getIntrinsicHeight\Width()`
-
-
-^ The intrinsic height/width of the drawable. 
-
----
-
-`@Override`
-`getIntrinsicHeight\Width()`
-
-ColorDrawable -> Drawable
+`getIntrinsicWidth()`  (onMeasure)
 
 ````java
-    public int getIntrinsicHeight() {
+    public int getIntrinsicWidth() {
         return -1;
     }
 ````
 
-^ The intrinsic height/width of the drawable is what height of the contents of the drawing in its 'basic' form.
-^ In the case of a solid color it has no intrinsic height. In the base of a Bitmap it might be the Bitmap's height or a scaled value.
-^ Where there is no intrinsic height you return -1, else the value.
+.
 
-^ this is the call that view queries during the measurement pass
+````java
+    public int getIntrinsicWidth() {
+        return mBitmap.getWidth();
+    }
+````
 
----
+^ The intrinsic dimensions of a drawable are the same as the height/width of a view.  You''re expected to know them when asked -- there''s no measuring pass as in a View.
 
-`@Override`
-`getMinimumHeight\Width()` 
+^ // In the case of a solid color it has no intrinsic height. In the base of a Bitmap it might be the Bitmap's height or a scaled value.
 
-^ This is the minimum height / width of your drawable class. It’s called in 
-`getSuggestedMinimumHeight()` in the View class.
-
----
-
-`@Override`
-`getMinimumHeight\Width()` 
-
-Default: returns 0
-
-
-^ The default implementation of Drawable returns 0 instead of -1. 
-
-^ If you’re writing custom views that rely on a Drawable, you’ll want to call  getIntrinsic, not getMinimum
+^ the view calls this method during the measurement pass.
 
 ---
 
-`@Override`
-`getConstantState() and mutate()`
+`getMinimumHeight\Width()`  (getSuggestedMinimumHeight())
+
+^ This is the minimum height / width of your drawable class. It’s called in
+`getSuggestedMinimumHeight()` in the View class.  usually 0 or whatever intrinsic returns.
+
+---
+
+`getMinimumHeight\Width()`  (getSuggestedMinimumHeight())
+
+
+### Bottom line: implement getIntrinsic, not getMinimum.
+
+---
+
+## Methods, ninja level
+- getConstantState() and mutate()
+
+^ finally there's two related methods that are ninja level Drawable API stuff.
+
+---
+
+`getConstantState()`
+
+![right|65%] (constant_state.png)
 
 ^ By default, every drawable inflated from the same resource shares the same state, called the ConstantState
 
@@ -464,33 +475,21 @@ Default: returns 0
 
 —
 
-`@Override`
-`getConstantState()`
-
-![right|65%] (constant_state.png)
-
-—
-
-`@Override`
 `mutate()`
-
-- Make this drawable mutable, independent of other instances.
-- Basically creates an ‘independent’ state.
 
 ![right|65%] (constant-state-mutate.png)
 
-^ mutate allows you to create a new, independent constant state value for an instance of a drawable.
+^ mutate allows you to create a new, independent constant state value for an instance of a drawable.  It orphans it from it's sibling drawables, so to speak.
 
 ^ This is useful when you want to modify properties of drawables loaded from resources
 
-^ once you’ve made the drawable mutable, calling mutate() will have no effect.
-
+^ This is a 'one way' function.  Calling mutate() multiple times will have no further effect.
 
 ---
 
 # Drawables + Views
 
-^ Ok, so let's figure out how the Drawable's work with Views.
+^ Now that we understand the Drawable API, let's talk about how they fit in with Views.
 
 ---
 
@@ -498,194 +497,137 @@ Default: returns 0
 
 —
 
-## Drawable.Callback
-
 ```java
 	 public static interface Callback {
-	 	
+
 	 	public void invalidateDrawable(Drawable who);
-	 	
+
 	 	public void scheduleDrawable(Drawable who, Runnable what, long when);
-	 	
+
 	 	public void unscheduleDrawable(Drawable who, Runnable what);
-	 	
+
 	 }
 ```
 
-^ The Drawable.Callback is how the View and Drawable talk. Its a very simple
-^ interface that allows the Drawable to tell the View it needs to be redrawn. The View then 
-^ invalidates itself in the area the Drawable occupies. Let's focus on the invalidateDrawable method.
+^ The Drawable.Callback is the interface that allows a Drawable to tell the View it needs to be redrawn. The View then invalidates itself in the area the Drawable occupies.
 
 ---
 
-## Drawable.Callback
-
 ````java
 	public class View implements Drawable.Callback {
-		
-		...
-		
+```
+
+^ The callback is implemented by the View. It''s the only interface that the View class implements.
+
+---
+
+```java
 		public void setBackground(Drawable d) {
 			mBackground = d;
 			d.setCallback(this);
 		}
-		
-		...
-		
-		public void invalidateDrawable(Drawable drawable) {
-    	    ...
-        	    final Rect dirty = drawable.getBounds();
-            	final int scrollX = mScrollX;
-	            final int scrollY = mScrollY;
-    	        invalidate(dirty.left + scrollX, dirty.top + scrollY,
-        	            dirty.right + scrollX, dirty.bottom + scrollY);
-	        ...
-    	}
-    	
-    	...
-    
-    }
-````
+```
 
-^ Here's abbreviated code from the Android View base class. 
-^ When a Drawable is set for something, like the background, the drawable's callback is assigned to be that View.
-^ When the Drawable calls back that it needs to invalidate, the Drawable's Bounds are used to invalidate that region of the View on screen.
+^ The callback is set when a drawable is used by the View.
+
+^ This means that drawables can only be used ONCE.
 
 ---
 
-## Drawable.Callback
-
 ```java
-	public abstract class Drawable {
-		private WeakReference<Callback> mCallback = null;
-		
-		...
-		
-		public void invalidateSelf() {
-    	    final Callback callback = getCallback();
-	        if (callback != null) {
-            	callback.invalidateDrawable(this);
-        	}
-    	}
-    	
-    	...
-		
-	}
-```
+public void invalidateDrawable(Drawable drawable) {
+      ...
+          final Rect dirty = drawable.getBounds();
+          invalidate(dirty.left, dirty.top,
+                  dirty.right, dirty.bottom);
+      ...
+````
 
-^ Here's the Drawable side of things. When it should redraw call invalidateSelf() and the View will redraw you.
-^ The single Callback is referenced. If you needed multiple callbacks triggered for one invalidateSelf() call you'll need to use a wrapper.
+^ When a Drawable needs be redrawn, the bounds of that drawable are what is invalidated.
+
+^ Which leads into our next point of discussion: what are drawable bounds?
 
 ---
 
 ## Drawable Bounds
 
-—
+—--
 
 ## Drawable.java
 `setBounds(Rect rect)`
 `setBounds(int left, int top, int right, int bottom)`
 
-^ sets the bounds or drawing coordinates available for the drawable to draw itself in.
+^ bounds are defined by the View the drawable is within.  
+
+^ the Intrinsic height and width are usually used in this calculation. but this calculation happens in the View during the measurement pass.
 
 —
 
-`setBounds(Rect rect)`
-`setBounds(int left, int top, int right, int bottom)`
+![fit] (view_coordinates.png)
 
-![right|fit] (view_coordinates.png)
-
-^ Coordinates for drawing a view are measured from the top left corner.  Every View calculates its own coordinates.
+^ For each View, the origin for coordinates is the top left.
 
 ---
 
-`setBounds(Rect rect)`
-`setBounds(int left, int top, int right, int bottom)`
+![fit] (drawable_coordinates.png)
 
-![right|fit] (drawable_coordinates.png)
+^ The drawable’s bounds are calculated then with reference to the View’s coordinate system.
 
-^ The drawable’s coordinates are calculated then with reference to the View’s coordinate system.
+^ These bounds are relative to placement within the VIEW.  (Not screen or window!)
 
 ---
 
-## View Render Passes
+## Binding it All Together
+
+---
+
 - Measurement
 - Layout
 - Draw
 
-^ Views are kind of like complicated wrappers for drawables. (Very complicated wrappers).
-^ The drawable interacts with the View during the measurement, layout, and draw cycles
+^ There are three phases to a View draw lifecycle.
 
 ——
 
-
-## View Render Passes
 - __*Measurement*__
 - Layout
 - __*Draw*__
 
-^ Views are kind of like complicated wrappers for drawables. (Very complicated wrappers).
-^ The drawable interacts with the View during the measurement, layout, and draw cycles
+^ Two of thse interact with the Drawable.  
 
-——
+^ Note that these are guidelines -- there''s no explicit contract for these.
 
+—--
 
-### onMeasure
-- View queries the Drawable for its desired size `getIntrinsic…()`
+## During __*Measurement*__
 
+- View -> `mDrawable.getIntrinsic*`
+- Calculates dimens, calls children, etc.
+- View Measurements -> ParentView
 
-—
+—-
 
+## Sometime before __*Draw*__
 
-### onMeasure
-- View queries the Drawable for its desired size `getIntrinsic…()`
-- View uses the dimens of the Drawable to calculate its dimens and reports back its size to its parent
-
-^ Every view does this a little bit differently
-
-—
-
-### onDraw
-- Calculates the bounds for that drawable*
+- Calculates bounds for drawable
+- `mDrawable.setBounds(...)`
 
 —
 
-### onDraw
-- Calculates the bounds for that drawable*
-- Calls `setBounds()` on the drawable*
+## During __*Draw*__
+- `mDrawable.draw(canvas)`
 
-^ * Calculating and setting the bounds for the drawable can happen any time after the measurement of the view
+—--
 
-—
+## Caveat Emptor
 
-### onDraw
-- Calculates the bounds for that drawable*
-- Calls `setBounds()` on the drawable*
-- Calls `draw(canvas)` on the drawable
+^ all this to say, watch out.  there is no contract for view & drawble interactions.
 
-^ It’s worth mentioning that the contract between the drawable and the view that you’re constructing isn’t set in stone.  How they interact depends on the view that you’re drawing.  
+^ here''s an example.
 
-—
+---
 
-### A Few Notes:
-Views assume that the drawable knows what size it wants to be before the bounds get set.
-
-^ You may need to know the size of the drawable before knowing how much space you have to draw in.
-
-—
-
-### A Few Notes:
-Views assume that the drawable knows what size it wants to be before the bounds get set.
-
-Every View computes the drawable’s bounds differently.
-
-^ Next every view computes its bounds differently
-
-—
-
-### View Bound Calculations:
-
-ColorDrawable.java
+*ColorDrawable.java*
 
 ````java
 getIntrinsicHeight() { returns -1; }
@@ -695,42 +637,38 @@ getIntrinsicHeight() { returns -1; }
 
 —
 
-### View Bound Calculations:
-
-ColorDrawable.java
+*ColorDrawable.java*
 
 ````java
 getIntrinsicHeight() { returns -1; }
 ````
 
-CompoundButton
+*CompoundButton.java*
 `setBounds(-1, -1, -1, -1);`
 
 ^ The compound button will return -1.
 
 —
 
-### View Bound Calculations:
-
-ColorDrawable.java
+*ColorDrawable.java*
 
 ````java
 getIntrinsicHeight() { returns -1; }
 ````
 
-CompoundButton
+*CompoundButton.java*
 `setBounds(-1, -1, -1, -1);`
 
-ImageView 
+*ImageView.java*
 `setBounds(leftMax, rightMax, topMax, bottomMax)`
 
 ^ For the drawable in an ImageView, if you pass back dimensions of -1, the imageView will set the bounds to be the total calculated size of the view.
 
-—
+—--
 
 # Lollipop
 
-^ Ok, let's talk about changes to Drawables in Lollipop. 
+^ Ok, let's talk about changes to Drawables in Lollipop.
 
 ---
 
@@ -741,7 +679,7 @@ ImageView
 ![75%|loop] (ripple_example.mov)
 
 
-^ Material Design's Ripple was present in the L Preview which gave us a hint about things to come. 
+^ Material Design's Ripple was present in the L Preview which gave us a hint about things to come.
 ^ We noticed that the Drawable reacts to touch input.
 
 ---
@@ -759,17 +697,17 @@ ImageView
 ```
 	public class Drawable {
 		...
-	 	
-    	 public void setHotspot(float x, float y) {}   
+
+    	 public void setHotspot(float x, float y) {}
 
     	 public void setHotspotBounds(int, int, int, int) {}
-	 	
+
 	 	...
-	}	
+	}
 ```
 
 ^ The ability to track TouchEvents is new for Drawables.
-^ The location of the TouchEvent is called the Hotspot. 
+^ The location of the TouchEvent is called the Hotspot.
 ^ To update the hotspot simply call the new method setHotspot() with the coordinates.
 ^ You can also update the bounds of the hotspot independently of the Drawable's general bounds
 ^ TODO: Where does a View call this?
@@ -781,11 +719,11 @@ ImageView
 ```
 	public class Drawable {
 		...
-	 	
-    	 public void getOutline(Outline outline) {}   
-	 	
+
+    	 public void getOutline(Outline outline) {}
+
 	 	...
-	}	
+	}
 ```
 
 ^ New in Lollipop is the ability to set elevation.
@@ -802,13 +740,13 @@ ImageView
 ```
 	public class Drawable {
 		...
-	 	
+
     	 public Rect getDirtyBounds() {
     	 	return getBounds();
-    	 }   
-	 	
+    	 }
+
 	 	...
-	}	
+	}
 ```
 
 ^ The dirty region is the area that will be invalidated and redrawn.
@@ -831,7 +769,7 @@ ImageView
 ```
 	public class Drawable {
 		...
-	 	
+
     	 public void applyTheme(Theme) { }
 
     	 public boolean canApplyTheme() { }
@@ -842,7 +780,7 @@ ImageView
 
     	 public void inflate(Resources, XmlPullParser, AttributeSet, Theme)
 	 	...
-	}	
+	}
 ```
 
 ^ In Lollipop the application Theme now supplies the color palette of the app through attributes.
@@ -859,7 +797,7 @@ ImageView
 ```
 	public class Drawable {
 		...
-	 	
+
     	 public void setTint(int)
 
     	 public void setTintList(ColorStateList list)
@@ -867,7 +805,7 @@ ImageView
     	 public void setTintMode(Mode)
 
 	 	...
-	}	
+	}
 ```
 
 ^ And to automatically apply the color there's a series of methods to apply the Tint color to the drawable.
@@ -883,7 +821,7 @@ ImageView
 ```java
 
 public class ConstantState {
-	
+
 
 	public boolean canApplyTheme()
 
@@ -893,7 +831,7 @@ public class ConstantState {
 
 ```
 
-^ The ConstantState class also got a slight update to support theme attributes. 
+^ The ConstantState class also got a slight update to support theme attributes.
 ^ In addition the newDrawable() method now takes in a Theme to create a clone with Theme attributes intact.
 
 ---
@@ -902,7 +840,7 @@ public class ConstantState {
 
 ^ It's also worth mentioning the VectorDrawable and its sibling AnimatedVectorDrawable were added in Lollipop.
 ^ This allows you to load Vector graphics from SVG and display them as a Drawable.
-^ The main parts of this are the SVG loader. 
+^ The main parts of this are the SVG loader.
 
 ---
 
@@ -915,7 +853,7 @@ MrVector https://github.com/telly/MrVector
 ^ Ok, what about Ripples? We hinted at efforts to do this at DroidCon NYC.
 
 ---
- 
+
 
 ![center|fit] (sad-kitty.jpg)
 
@@ -929,18 +867,18 @@ MrVector https://github.com/telly/MrVector
 
 ```java
 	public class RippledImageView extends ImageView {
-		
+
 		...
-		
+
 		@Override
     	public boolean onTouchEvent(MotionEvent event) {
         	updateHotspot(event.getX(), event.getY());
         	return super.onTouchEvent(event);
     	}
-    	
+
     	private void updateHotspot(float x, float y) {
-    		
-    		Drawable background = getBackground();    		 
+
+    		Drawable background = getBackground();
         	if (background != null && background instanceof RippleDrawableCompat) {
             	((RippleDrawableCompat) background).setHotspot(x, y);
 	        }
@@ -949,16 +887,16 @@ MrVector https://github.com/telly/MrVector
         	if (src != null && src instanceof RippleDrawableCompat) {
             	((RippleDrawableCompat) src).setHotspot(x, y);
 	        }
-	        
+
     	}
-		
+
 	}
 ```
 
 ^ Since the Ripple follows the finger, it needs to know where the TouchEvents are occuring.
 ^ Pre-Lollipop View's don't pass this information to Drawables.
 ^ In order to implement this you'll need to create a custom View subclass and pass that info yourself.
-^ This means that any View using a Ripple will need to be custom. 
+^ This means that any View using a Ripple will need to be custom.
 ^ This also means that integration with libraries like AppCompat become more difficult since they don't handle custom Views well.
 
 ---
@@ -973,16 +911,16 @@ public void draw(@NonNull Canvas canvas) {
         final Rect bounds = getDirtyBounds();
         final int saveCount = canvas.save(Canvas.CLIP_SAVE_FLAG);
         canvas.clipRect(bounds);
-        
+
         drawContent(canvas);
         drawBackgroundAndRipples(canvas);
-        
+
         canvas.restoreToCount(saveCount);
 }
 ```
 
 ^ Implementation wise if you peek at RippleDrawable you'll see the Drawable delegates the logic of Ripples to a Ripple class.
-^ The Drawable simply keeps a list of Ripples and calls through to them in draw() 
+^ The Drawable simply keeps a list of Ripples and calls through to them in draw()
 
 ---
 
@@ -1017,7 +955,7 @@ public boolean draw(Canvas c, Paint p) {
 
 # Ripple
 
-Search: 
+Search:
 
 Android Graphics Pipeline Button to FrameBuffer"
 
@@ -1035,7 +973,7 @@ https://source.android.com/devices/graphics/index.html
 ![center|fit] (res-drawable-folders.png)
 
 ^ It may be possible to backport this by extracting out all the classes but on older devices (especially pre Project Butter) the performance gains may not be possible to achieve for application use.
-^ For most developers sticking with Selectors on pre-Lollipop devices is straight-forward and supported using resource qualifiers. 
+^ For most developers sticking with Selectors on pre-Lollipop devices is straight-forward and supported using resource qualifiers.
 
 ---
 
@@ -1052,5 +990,3 @@ https://source.android.com/devices/graphics/index.html
 # [fit] The story of Drawables and their View masters
 
 #### __*Jamie Huson*__ + __*Lisa Neigut*__ | __20 Sept 2014__
-
-
