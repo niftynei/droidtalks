@@ -17,11 +17,11 @@
 
 ^ So. Drawables.  A few years ago at Devoxx 2013, an Android developer Cyril Mottier gave an excellent talk on Drawables, entitled Mastering Android Drawables.
 
-^ In many ways, that talk was the inspiration for this one.  
+^ In many ways, that talk was the inspiration for this one.
 
-^ I'd like to pick up from where Monsieur Mottier left off. Let's get into the specifics of the drawables APIs.
+^ I'd like to pick up from where Cyril Mottier's talk left off and get into the specifics of the drawables APIs.
 
-^ First I'll talk a bit about how they fit into a View’s measurement/layout/draw cycles. Then Jamie will take us through what's changed in Drawable with Lollipop's release.
+^ First I'll talk a bit about how they fit into a View’s measurement/layout/draw cycles. Then we'll go through what's changed in Drawable with Lollipop's release.
 
 ---
 
@@ -36,15 +36,15 @@
 
 ### __-Cyril Mottier__
 
-^ What is a drawable?
+^ What is a drawable?  The AOSP docs define it as "something that can be drawn"
 
-^ Cyril’s definition from Mastering Drawables is hard to improve on: A drawable is a positioned entity that is to be drawn on a canvas.
+^ I like Cyril’s definition from Mastering Drawables: A drawable is a positioned entity that is to be drawn on a canvas.
 
 ----
 
 # What Makes Drawables Awesome:
 - Drawing is fun!
-- State Changes
+- Handling State Changes
 - Separation of View Logic from Code
 - XML
 - Versatility
@@ -123,7 +123,7 @@
 ## BadgeDrawable
 ![fit|right] (badge_drawable.png)
 
-^ Jesse Hendrickson’s BadgeDrawable class is a useful one. This drawable displays a character on top of a circle drawable.  
+^ Jesse Hendrickson’s BadgeDrawable class is a useful one. This drawable displays a character on top of a circle drawable.
 
 ^ In this example, this is a single TextView, with a BadgeDrawable set as the right compoundDrawable. Way to keep that view hierarchy thin.
 
