@@ -908,20 +908,17 @@ public class ConstantState {
 
 # Backwards Compatibility
 
-VectorDrawable and AnimatedVectorDrawable
-
-Checkout the MrVector library on Github
+MrVector https://github.com/telly/MrVector
 
 ^ Since the VectorDrawable's design constraints didn't require big changes to the API it's actually been backported already.
 ^ Recent hidden changes to the Support Library also suggest Google is working on official support for pre-Lollipop devices also.
+^ Ok, what about Ripples? We hinted at efforts to do this at DroidCon NYC.
 
 ---
+ 
 
-# Backwards Compatibility
+![center|fit] (sad-kitty.jpg)
 
-Ripple 
-
-TODO: sad kitty gif
 
 ^ Ripple's implementation heavily relies on the recent Lollipop API changes, making it not straight forward.
 ^ Let's talk about those challenges.
@@ -1020,13 +1017,16 @@ public boolean draw(Canvas c, Paint p) {
 
 # Ripple
 
-Google "Android Graphics Pipeline Button to FrameBuffer"
+Search: 
 
-or read the docs
+Android Graphics Pipeline Button to FrameBuffer"
 
-TODO: get AOSP site
+AOSP:
 
-^ DisplayLists were introduced as part of Project Butter to speed things up by re-ordering drawing calls to be more effecient for the GPU.
+https://source.android.com/devices/graphics/index.html
+
+
+^ DisplayLists were used as part of Project Butter to speed things up by re-ordering drawing calls to be more effecient for the GPU.
 ^ If you want to understand more about how this works and why it acheives better performance there's a great series of blogposts. Google it
 ^ You can also read the Rendering and Graphics pipeline documentation on the AOSP site.
 
