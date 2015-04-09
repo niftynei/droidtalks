@@ -728,9 +728,9 @@ ImageView
 
 —
 
-# The Future of Drawable 
+# Lollipop
 
-^ Ok, so we’ve got some time left. Let's talk about some new drawable types coming up in L.
+^ Ok, let's talk about changes to Drawables in Lollipop. 
 
 ---
 
@@ -741,9 +741,8 @@ ImageView
 ![75%|loop] (ripple_example.mov)
 
 
-^ The Ripple is a fundamental part of Material Design presented at I/O. It provides feedback
-^ when the user interacts with almost any UI element. There's a few different interesting parts to it.
-^ First you'll notice the Ripple originates and moves with the TouchEvents going on.
+^ Material Design's Ripple was present in the L Preview which gave us a hint about things to come. 
+^ We noticed that the Drawable reacts to touch input.
 
 ---
 
@@ -751,114 +750,185 @@ ImageView
 ![35%|loop] (ripple-masked.mov)
 
 ^ Second you'll notice the Ripple can be masked to another Drawable, such as a Bitmap.
-
+^ The design constraints of Material Design, including Ripples, seems to be the driving force to the API changes.
 
 ---
 
-# Ripple
+# Lollipop - Touch Events
 
 ```
 	public class Drawable {
 		...
 	 	
-    	public void setHotspot(float x, float y) { /* compiled code */ }
+    	 public void setHotspot(float x, float y) {}   
+
+    	 public void setHotspotBounds(int, int, int, int) {}
 	 	
 	 	...
 	}	
 ```
 
+^ The ability to track TouchEvents is new for Drawables.
 ^ The location of the TouchEvent is called the Hotspot. 
-^ In L they added some new methods to Drawable to update the location of the Hotspot.
-^ It's pretty clear that somewhere in a View class the TouchEvent locations are being passed to the Ripple.
+^ To update the hotspot simply call the new method setHotspot() with the coordinates.
+^ You can also update the bounds of the hotspot independently of the Drawable's general bounds
+^ TODO: Where does a View call this?
 
 ---
 
-# Pre-L?
+# Lollipop - Outline
 
-
-^ So Drawable has been fundamentally altered in L. But let's try and bring this to our Pre-L apps. 
-^ Drawing the ripples is fairly straight-forward. You're drawing two circles.
-^ One covers the background and the other follows the TouchEvents. 
-^ We won't dive into how to draw the circles because once L is open sourced we can get the animation timings and effects exact. 
-^ For now let's look at the two major features which is the Hotspot and the Mask.
-
----
-
-# RippleDrawableCompat
-
-```java
-	public class RippleDrawableCompat extends LayerDrawable {	
-	
-	}
+```
+	public class Drawable {
+		...
+	 	
+    	 public void getOutline(Outline outline) {}   
+	 	
+	 	...
+	}	
 ```
 
-^ Ok, let's start building a Drawable that mirrors the RippleDrawable in L
-^ Checking out the compiled code in L we see that RippleDrawable extends LayerDrawable so let's do that
+^ New in Lollipop is the ability to set elevation.
+^ Elevation is a key part of Material Design that allows different planes of content to be distinguishable from one another.
+^ Android draws shadows for Views based on their elevation.
+^ The shape of those shadows is defined by a View's Outline.
+^ Since Drawables are used as the background of Views the Drawable itself provides an Outline through a new getOutline() method.
+^ By default the Drawable's outline is simply its bounds but this can be modified based on the Drawable content.
 
 ---
 
-# RippleDrawableCompat
+# Lollipop - Dirty Region
 
-```java
-	public class RippleDrawableCompat extends LayerDrawable {
-	
-		private Drawable mask;
-	
-		public RippleDrawableCompat(Drawable content, Drawable mask) {
-			super(content != null ? new Drawable[] { content } : new Drawable[] { } );
-			this.mask = mask;
-		}	
-				
-	}
+```
+	public class Drawable {
+		...
+	 	
+    	 public Rect getDirtyBounds() {
+    	 	return getBounds();
+    	 }   
+	 	
+	 	...
+	}	
 ```
 
-^ Next, let's match the constructor arguments
-^ The LayerDrawable super class expects an array of Drawable and can't be null.
-^ Here we check if the content is null and create an empty array.
-^ The final argument is a Drawable to use as a mask. For now let's just keep a reference to it in our class.
+^ The dirty region is the area that will be invalidated and redrawn.
+^ Pre-Lollipop invalidation would cause the entire Bounds of a Drawable to be re-drawn.
+^ This is no longer the case in Lollipop. By default the bounds are used, but this can be modified by returning a different Rect to invalidate only a region within the Drawable.
 
 ---
 
-# RippleDrawableCompat
 
-```java
-	public class RippleDrawableCompat extends LayerDrawable {
-	
-		private ColorStateList colors;
-		
-		public void setColor(ColorStateList colors) {
-			this.colors = colors;
-		}
-				
-	}
+![35%|loop] (ripple-bounds-dialer.mov)
+
+
+^ Ripples use this to define the dirty region to extend into the hosting View's parent area when its unbounded such as in Dialer.
+
+---
+
+# Lollipop - Theme
+
+
+```
+	public class Drawable {
+		...
+	 	
+    	 public void applyTheme(Theme) { }
+
+    	 public boolean canApplyTheme() { }
+
+    	 public Drawable createFromXml(Resources, XmlPullParser, Theme)
+
+    	 public Drawable createFromXmlInner(Resources, XmlPullParser, AttributeSet, Theme)
+
+    	 public void inflate(Resources, XmlPullParser, AttributeSet, Theme)
+	 	...
+	}	
 ```
 
-^ The Color of the Ripple is provided as a ColorStateList
-^ The ColorStateList will provide a color based on the current state, such as Pressed
+^ In Lollipop the application Theme now supplies the color palette of the app through attributes.
+^ This is supported in AppCompat as well.
+^ Ripples are using this information to create a complementary ripples color that matches the app theme.
+^ You can see here that the methods for inflation and creation  of the Drawable now includes the Theme of the app.
 
 ---
 
-# RippleDrawableCompat
 
-```java
-	public class RippleDrawableCompat extends LayerDrawable {
-	
-		private float hotspotX;
-		private float hotspotY;
-	
-		public void setHotspot(float x, float y) {
-			this.hotspotX = x;
-			this.hotspotY = y;						
-		}
-	
-	}
+# Lollipop - Tint
+
+
+```
+	public class Drawable {
+		...
+	 	
+    	 public void setTint(int)
+
+    	 public void setTintList(ColorStateList list)
+
+    	 public void setTintMode(Mode)
+
+	 	...
+	}	
 ```
 
-^ Now, let's keep track of the Hotspot location 
+^ And to automatically apply the color there's a series of methods to apply the Tint color to the drawable.
+^ It's important to note that it's up to the Drawable sub-class to use that color in some way.
+^ The Mode in setTintMode refers to is the PorterDuff Mode which determines how the color should be applied to the drawable's content.
+^ Pro-Tip: Setting a ColorFilter will override the Tint supplied either here or through the Theme
 
 ---
 
-# RippleDrawableCompat
+
+# Lollipop - ConstantState
+
+```java
+
+public class ConstantState {
+	
+
+	public boolean canApplyTheme()
+
+	public Drawable newDrawable(Resources, Theme)
+
+}
+
+```
+
+^ The ConstantState class also got a slight update to support theme attributes. 
+^ In addition the newDrawable() method now takes in a Theme to create a clone with Theme attributes intact.
+
+---
+
+# VectorDrawable
+
+^ It's also worth mentioning the VectorDrawable and its sibling AnimatedVectorDrawable were added in Lollipop.
+^ This allows you to load Vector graphics from SVG and display them as a Drawable.
+^ The main parts of this are the SVG loader. 
+
+---
+
+# Backwards Compatibility
+
+VectorDrawable and AnimatedVectorDrawable
+
+Checkout the MrVector library on Github
+
+^ Since the VectorDrawable's design constraints didn't require big changes to the API it's actually been backported already.
+^ Recent hidden changes to the Support Library also suggest Google is working on official support for pre-Lollipop devices also.
+
+---
+
+# Backwards Compatibility
+
+Ripple 
+
+TODO: sad kitty gif
+
+^ Ripple's implementation heavily relies on the recent Lollipop API changes, making it not straight forward.
+^ Let's talk about those challenges.
+
+---
+
+# Ripple
 
 ```java
 	public class RippledImageView extends ImageView {
@@ -888,166 +958,84 @@ ImageView
 	}
 ```
 
-
-^ To add support for Hotspot we need to extend any View who's using the RippleDrawableCompat to pass its TouchEvents along.
-^ We do this by checking any set Drawables for their class type and then calling the setHotspot() method
-^ This means you'll be using custom Views through your app but chances are you're doing this already.
-
----
-
-# Mask
-
-![right|125%] (mask-example.png)
-
-^ Next, we want to support the Drawable Mask
-^ Here you can see the effect. The Ripple is limited to draw only in the area of the Drawable
-^ In this case we're using the sample Android bitmap icon as the mask.
-^ From experience we know that BitmapShader's are an easy way to do masking.
-^ To use the BitmapShader first we need to convert our Drawable into a Bitmap.
+^ Since the Ripple follows the finger, it needs to know where the TouchEvents are occuring.
+^ Pre-Lollipop View's don't pass this information to Drawables.
+^ In order to implement this you'll need to create a custom View subclass and pass that info yourself.
+^ This means that any View using a Ripple will need to be custom. 
+^ This also means that integration with libraries like AppCompat become more difficult since they don't handle custom Views well.
 
 ---
 
-# RippleDrawableCompat
+# Ripple
 
 ```java
-	
-	private Bitmap convertDrawableToBitmap(Drawable mask, Bounds bounds) {
-		
-		Bitmap maskBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-		
-	}	
-```
-
-^ First, we create a bitmap thats the correct size, the width and height will come from our Drawable bounds
-^ We use the Bitmap Config Alpha 8 which only stores a single channel for translucency.
-^ Essentially where there are pixels there is a value otherwise its transparent.
-
---- 
-# RippleDrawableCompat
-
-```java
-	
-	private Bitmap convertDrawableToBitmap(Drawable mask, Bounds bounds) {
-		
-		Bitmap maskBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-
-	    Canvas maskCanvas = new Canvas(maskBitmap);
-	}	
-```
-
-^ Next we create a Canvas using the Bitmap
-
---- 
-# RippleDrawableCompat
-
-```java
-	
-	private Bitmap convertDrawableToBitmap(Drawable mask, Bounds bounds) {
-		
-		Bitmap maskBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-
-	    Canvas maskCanvas = new Canvas(maskBitmap);
-
-        mask.setBounds(bounds);		
-        mask.draw(maskCanvas);
+@Override
+public void draw(@NonNull Canvas canvas) {
+        // Clip to the dirty bounds, which will be the drawable bounds if we
+        // have a mask or content and the ripple bounds if we're projecting.
+        final Rect bounds = getDirtyBounds();
+        final int saveCount = canvas.save(Canvas.CLIP_SAVE_FLAG);
+        canvas.clipRect(bounds);
         
-        return maskBitmap;
-	}	
+        drawContent(canvas);
+        drawBackgroundAndRipples(canvas);
+        
+        canvas.restoreToCount(saveCount);
+}
 ```
 
-^ Finally we set the bounds on our Drawable mask and have it draw into the Canvas
-^ Then we just return our Bitmap
+^ Implementation wise if you peek at RippleDrawable you'll see the Drawable delegates the logic of Ripples to a Ripple class.
+^ The Drawable simply keeps a list of Ripples and calls through to them in draw() 
 
 ---
 
-# RippleDrawableCompat
+# Ripple
 
 ```java
-	public class RippleDrawableCompat extends LayerDrawable  {	
-		
-		@Override
-    	protected void onBoundsChange(Rect bounds) {
-        	super.onBoundsChange(bounds);
-        	        	
-        	// we have a Drawable to use as a mask
-        	if (mask != null) {
-
-            	Bitmap maskBitmap = convertDrawableToBitmap(mask, bounds)
-
-	            // this shader will limit where drawing takes place to only the mask area
-    	        maskShader = new BitmapShader(maskBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-
-        	}
-                    
+public boolean draw(Canvas c, Paint p) {
+        final boolean canUseHardware = c.isHardwareAccelerated();
+        if (mCanUseHardware != canUseHardware && mCanUseHardware) {
+            // We've switched from hardware to non-hardware mode. Panic.
+            cancelHardwareAnimations(true);
         }
-    }
+
+        mCanUseHardware = canUseHardware;
+        final boolean hasContent;
+        if (canUseHardware && (mHardwareAnimating || mHasPendingHardwareExit)) {
+            hasContent = drawHardware((HardwareCanvas) c, p);
+        } else {
+            hasContent = drawSoftware(c, p);
+        }
+
+        return hasContent;
+}
 ```
 
-^ We know our size when onBoundsChange is called. 
-^ Now we just call our method to convert the Drawable into a Bitmap and use that in our BitmapShader
-
----
-# BitmapShader
-
-![right|125%] (mask-example-no-color.png)
-
-^ Here's the effect we get. The mask works but the color isn't what we want. 
-^ Its only using the value which is stored when there's no transparency from the Bitmap, which is gray.
-^ Next let's get the color of the Ripple and color our masked area when drawing.
+^ We can see in the Ripple's draw it's choosing to draw using Hardware acceleration if available and fallback to Software.
+^ Given ripples are used all over on potentially every View on screen this could quickly cause performance hits if using Software alone.
+^ Ripples are constantly animating. To do this efficiently there's a hidden RenderNodeAnimator class.
+^ These hidden RenderNode classes interact with the native OpenGL canvases and keep their own DisplayLists to get higher performance.
 
 ---
 
-# RippleDrawableCompat
+# Ripple
 
-```java
-	public class RippleDrawableCompat extends LayerDrawable {	
-			
-		@Override
-	    protected boolean onStateChange(int[] state) {
-	    	
-	    	// get the color for the current state                
-	    	int color = colorStateList.getColorForState(state, Color.TRANSPARENT);	    
-	    	
-	    }
-	    
-	}
-```
+Google "Android Graphics Pipeline Button to FrameBuffer"
 
-^ When our state changes we can now get the color of our ripple for this state.
+or read the docs
+
+TODO: get AOSP site
+
+^ DisplayLists were introduced as part of Project Butter to speed things up by re-ordering drawing calls to be more effecient for the GPU.
+^ If you want to understand more about how this works and why it acheives better performance there's a great series of blogposts. Google it
+^ You can also read the Rendering and Graphics pipeline documentation on the AOSP site.
 
 ---
 
-# RippleDrawableCompat
+![center|fit] (res-drawable-folders.png)
 
-```java
-	public class RippleDrawableCompat extends LayerDrawable {	
-			
-		@Override
-	    protected boolean onStateChange(int[] state) {
-	    	
-	    	// get the color for the current state                
-	    	int color = colorStateList.getColorForState(state, Color.TRANSPARENT);
-	    			    			    
-		    LinearGradient gradient = new LinearGradient(0, 0, 0, 0, color, color, Shader.TileMode.CLAMP);
-    	    ComposedShader shader = new ComposeShader(maskShader, gradient, PorterDuff.Mode.SRC_IN);	                	                
-                    
-            paint.setShader(shader);
-          	    	
-	    }
-	    
-	}
-```
-
-^ The ComposeShader allows us to combine multiple shaders together using a PorterDuff mode.
-^ To achieve the affect we want we need to compose our Mask's BitmapShader with a solid color shader using PorterDuff Mode SRC IN
-^ Since there is no Solid Color Shader, we use a LinearGradient with the same color for start and end values
-^ Once composed this will limit drawing to the masked area and draw the correct color.
-
----
-
-![35%|loop] (ripple-compat-demo.mov)
-
-^ Here's a demo of the effects running on a Jelly Bean Emulator.
+^ It may be possible to backport this by extracting out all the classes but on older devices (especially pre Project Butter) the performance gains may not be possible to achieve for application use.
+^ For most developers sticking with Selectors on pre-Lollipop devices is straight-forward and supported using resource qualifiers. 
 
 ---
 
