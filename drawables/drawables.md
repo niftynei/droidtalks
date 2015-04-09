@@ -977,16 +977,8 @@ https://source.android.com/devices/graphics/index.html
 
 ---
 
-# Thank You!
+#[fit] Thank You!
 
-^ If you’ve got questions or are interested in what we’re up to at Etsy, come say hi at our booth
+### @JamieHuson ^.^ @niftynei
 
----
-
-
-# __*getBounds()*__
-
-
-# [fit] The story of Drawables and their View masters
-
-#### __*Jamie Huson*__ + __*Lisa Neigut*__ | __20 Sept 2014__
+^ If you’ve got questions or want to talk more about drawables, we'll be around.
