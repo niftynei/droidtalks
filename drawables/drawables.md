@@ -717,7 +717,9 @@ public class View {
 	public void onTouchEvent(MotionEvent event) {
 	 	switch(event.getAction()) {
 	 		case MotionEvent.ACTION_MOVE:
-	 			**drawableHotspotChanged(x, y);**
+	 			drawableHotspotChanged(x, y);
+
+	 			...
 	 			break;
 	 	}
 	}
@@ -862,11 +864,15 @@ public class ConstantState {
 
 # Backwards Compatibility
 
-MrVector https://github.com/telly/MrVector
+**MrVector** https://github.com/telly/MrVector
 
 ^ Since the VectorDrawable's design constraints didn't require big changes to the API it's actually been backported already.
 ^ Recent hidden changes to the Support Library also suggest Google is working on official support for pre-Lollipop devices also.
 ^ Ok, what about Ripples? We hinted at efforts to do this at DroidCon NYC.
+
+---
+
+# Ripple
 
 ---
 
