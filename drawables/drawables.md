@@ -702,7 +702,31 @@ getIntrinsicHeight() { returns -1; }
 ^ The location of the TouchEvent is called the Hotspot.
 ^ To update the hotspot simply call the new method setHotspot() with the coordinates.
 ^ You can also update the bounds of the hotspot independently of the Drawable's general bounds
-^ TODO: Where does a View call this?
+
+---
+
+# Lollipop - Touch Events
+
+```java
+
+public class View {
+	
+	...
+	
+	@Override
+	public void onTouchEvent(MotionEvent event) {
+	 	switch(event.getAction()) {
+	 		case MotionEvent.ACTION_MOVE:
+	 			**drawableHotspotChanged(x, y);**
+	 			break;
+	 	}
+	}
+
+}
+
+```
+
+^ In the View class the hotspot gets updated when the finger is moving in the onTouchEvent()'s Move events
 
 ---
 
