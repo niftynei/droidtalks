@@ -627,34 +627,58 @@ getIntrinsicHeight() { returns -1; }
 
 ^ so let’s consider the what happens when a drawable passes back a height and width of -1, which means it has no set dimensions.
 
-—
-
-*ColorDrawable.java*
-
-````java
-getIntrinsicHeight() { returns -1; }
-````
+--- 
 
 *CompoundButton.java*
-`setBounds(-1, -1, -1, -1);`
 
-^ The compound button will return -1.
+```java
+public void onDraw(Canvas canvas) {
+ final int verticalGravity = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
+            final int drawableHeight = buttonDrawable.getIntrinsicHeight();
+            final int drawableWidth = buttonDrawable.getIntrinsicWidth();
+            int top = 0;
+            switch (verticalGravity) {
+                case Gravity.BOTTOM:
+                    top = getHeight() - drawableHeight;
+                    break;
+                case Gravity.CENTER_VERTICAL:
+                    top = (getHeight() - drawableHeight) / 2;
+                    break;
+            }
+            int bottom = top + drawableHeight;
+            int left = isLayoutRtl() ? getWidth() - drawableWidth : 0;
+            int right = isLayoutRtl() ? getWidth() : drawableWidth;
+            buttonDrawable.setBounds(left, top, right, bottom);
+            buttonDrawable.draw(canvas);
+}
+```
+
+^ The compound button needs to handle LTR and RTL languages so during its onDraw() it passes computes the drawable's bounds correctly and then has the Drawable do its draw.
 
 —
-
-*ColorDrawable.java*
-
-````java
-getIntrinsicHeight() { returns -1; }
-````
-
-*CompoundButton.java*
-`setBounds(-1, -1, -1, -1);`
 
 *ImageView.java*
-`setBounds(leftMax, rightMax, topMax, bottomMax)`
 
-^ For the drawable in an ImageView, if you pass back dimensions of -1, the imageView will set the bounds to be the total calculated size of the view.
+```java
+ if (dwidth <= 0 || dheight <= 0 || ScaleType.FIT_XY == mScaleType) {
+            /* If the drawable has no intrinsic size, or we're told to
+                scaletofit, then we just fill our entire view.
+            */
+            mDrawable.setBounds(0, 0, vwidth, vheight);
+            mDrawMatrix = null;
+        } else {
+            // We need to do the scaling ourself, so have the drawable
+            // use its native size.
+            mDrawable.setBounds(0, 0, dwidth, dheight);
+
+            ...
+
+        } 
+```
+
+^ ImageView on the other hand uses the ScaleType to determine how bounds on the Drawable are set, and in the case of the FIT the drawable's width and height are use intrinsic values, which may be -1.
+^ It's also worth noting this code is only called when the ScaleType is set not in every onDraw() like the CompoundButton.
+^ Conclusion being how your Drawable interacts with a View depends entirely on the View's code. Don't make assumptions about what will be returned.
 
 —--
 
