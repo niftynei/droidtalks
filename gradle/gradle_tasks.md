@@ -14,17 +14,18 @@
 
 ^ Prior to working at Electric Objects, I worked at Etsy for two and a half years. While at Etsy I worked on the apps, as well as I writing and maintaining Gradle plugins, and the Android testing infrastructure.
 
-^ This is the Etsy Android team at Google IO last year.  I'm the one with the zebra shirt.
+---
 
-^ We're all excited about getting cardboard freebies.
+![left](image_running.jpg)
+![right](image.jpg)
+
+^ Other than writing software, I'm an avid hiker, a proud Vespa owner, and very active Twitterer.
+
+^ I live and work in NYC.
 
 ---
 
-[[ TODO: Pictures of me hiking & of Janet. ]]
-
-^ Other than writing software, I'm an avid hiker and barefoot runner, a proud Vespa owner, and very active Twitterer.
-
-^ I live and work in NYC.
+## Gradle Tasks
 
 ---
 
