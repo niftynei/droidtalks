@@ -2,7 +2,7 @@
 # __*getBounds()*__
 
 
-# [fit] The story of Drawables and their View masters
+## The Drawables Story
 
 #### __*Jamie Huson*__ + __*Lisa Neigut*__ | __10 Avril 2015__
 
@@ -627,7 +627,7 @@ getIntrinsicHeight() { returns -1; }
 
 ^ so let’s consider the what happens when a drawable passes back a height and width of -1, which means it has no set dimensions.
 
---- 
+---
 
 *CompoundButton.java*
 
@@ -673,7 +673,7 @@ public void onDraw(Canvas canvas) {
 
             ...
 
-        } 
+        }
 ```
 
 ^ ImageView on the other hand uses the ScaleType to determine how bounds on the Drawable are set, and in the case of the FIT the drawable's width and height are use intrinsic values, which may be -1.
@@ -734,9 +734,9 @@ public void onDraw(Canvas canvas) {
 ```java
 
 public class View {
-	
+
 	...
-	
+
 	@Override
 	public void onTouchEvent(MotionEvent event) {
 	 	switch(event.getAction()) {
