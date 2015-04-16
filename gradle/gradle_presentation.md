@@ -198,7 +198,7 @@ Groovy:
 
 ^ So here they are side by side.  
 
-^ A quick side note. In the Groovy, it is an abbreviation. We’ll get to this later.
+^ A quick side note. In Groovy, it is an abbreviation. We’ll get to this later.
 
 ---
 

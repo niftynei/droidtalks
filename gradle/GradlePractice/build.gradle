@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.2'
+        classpath 'com.android.tools.build:gradle:1.1.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -20,13 +20,18 @@ allprojects {
 
 task hello {
     doLast {
-        println "Hello!!!"
+        println "Hello NewCircle!"
     }
 }
- task hello2 << {
-    println "hello again!"
- }
 
-task brokenTask {
-    println "i'm broken : ("
-}
+
+
+
+
+//task helloAgain << {
+//    println "Hello Again, NewCircle!"
+//}
+//
+//task earlyHello {
+//    println "Hello, very early"
+//}
