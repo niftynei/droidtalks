@@ -22,16 +22,18 @@ task hello {
     doLast {
         println "Hello NewCircle!"
     }
+
+    doFirst {
+        println "Hello doFirst"
+    }
+} << {
+    println "hello left shift"
+
+}
+task helloAgain << {
+    println "Hello Again, NewCircle!"
 }
 
-
-
-
-
-//task helloAgain << {
-//    println "Hello Again, NewCircle!"
-//}
-//
-//task earlyHello {
-//    println "Hello, very early"
-//}
+task earlyHello {
+    println "Hello, very early"
+}
