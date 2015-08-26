@@ -5,11 +5,11 @@
 ---
 
 # Android Development 
-## A Pirate's Guidelines
+## A Pirate's __Guidelines__
 
 --- 
 
-# Where did these come from?
+#[fit] Where did these come from?
 
 ^ so i started at Electric Objects in January
 ^ i started where, i'm sure most of us end up every once in a while:
@@ -29,7 +29,7 @@
 
 --- 
 
-~~ image of Electric Objects Mock Ups ~~
+![100%](wireframe_set.png)
 
 ^ if you're a lucky android dev, you probably start off with something that looks like this.
 ^ mock ups that your designer made.
@@ -37,7 +37,7 @@
 
 ---
 
-~~ image of iOS app Mock Ups ~~
+![100%](ios_wireframe_set.png)
 
 ^ mock ups for an iOS app.
 
@@ -60,7 +60,8 @@
 ^ who was actually an iOS dev who decided Android was the next big thing
 ^ and that Etsy needed to get with it.
 
-~~ image of lisa 'android' and tim 'android' ~~
+![left](lisa_droid.png)
+![right](tim_droid.png)
 
 ---
 
@@ -109,8 +110,8 @@
 
 ---
 
-~~ image of blueprint on the left ~~
-~~ image of app screen mocks on the right ~~
+![left|fit](star_trek_blueprints.jpg)
+![right|fit](wireframe_set.png)
 
 ^ okay, so you're ready to get started making your app.
 
@@ -119,8 +120,8 @@
 ^ so as you do, i start looking for similarities between these mock ups
 ^ hmm, these look very similar
 
-~~ image of OkayActivity mock up ~~
-~~ image of SuccessActivity mock up ~~
+![left|fit](okay_activity.png)
+![right|fit](success_activity.png)
 
 ---
 
@@ -147,53 +148,70 @@ setContentView(R.layout.activity_generic.xml);
 
 ---
 
-# luke: hey lisa! :waves:
+` luke: hey lisa! 👋`
 
 ---
 
-#luke: hey lisa! :waves:
-#lisa: hey! :waves: :skin_tone_3:
+`luke: hey lisa! 👋`
+`lisa: hey! 👋🏽`
 
 ---
 
-#luke: the app's looking really great! :rocket_starfish:
+`luke: the app's looking really great! 👍🏻`
 
 ---
 
-#luke: the app's looking really great! :rocket_starfish:
-#lisa: /me blushes.
+`luke: the app's looking really great! 👍🏻`
+`lisa: /me blushes ☺️`
 
 ---
 
-#luke: one thing though.
+`luke: just one thing`
 
 ^ # pause to let people read it #
 ^ # say # stomach starts to drop a bit
 
 ---
 
-#luke: one thing though.
-#luke: the user needs a way to logout from the success screen
+`luke: just one thing`
+`luke: the user needs a way to logout from the success screen`
 
 ---
 
-~~ image of new success screen, but with 'Logout' link ~~
+![100%](success_activity.png)
+![100%](success_activity_logout.png)
 
 ---
 
-#lisa: /me thinks furiously
+`lisa: /me thinks furiously`
 
 ---
 
-#lisa: /me prepares diatribe on the Android Back Button
+`lisa: /me prepares diatribe on the Android Back Button`
 
 ---
 
-#lisa: /me realizes is vastly outnumber by iOS devices
+`lisa: /me realizes she is vastly outnumber by iOS devices`
 
 ---
 
-#lisa: /me ctrl-C; ctrl-V; *renames copy*
+^ # look left.  look right. (furtively) #
+
+---
+
+`lisa: /me ctrl-C; ctrl-V`
+
+---
+
+```java
+OkayActivity.java
+setContentView(R.layout.activity_generic.xml);
+```
+
+```java
+SuccessActivity.java
+setContentView(R.layout.activity_slightly_less_generic.xml);
+```
 
 ---
 
@@ -210,23 +228,16 @@ setContentView(R.layout.activity_generic.xml);
 
 ---
 
-```java
-OkayActivity.java
-setContentView(R.layout.activity_generic.xml);
-```
-
-```java
-SuccessActivity.java
-setContentView(R.layout.activity_slightly_less_generic.xml);
-```
-
----
-
 ^ i'm sure some of you are thinking, lisa you're daft.
 ^ which is totally true.
 ^ what about this other, more general programming best practices principle
 
+---
+
 # PRGRAMMING BEST PRACTICES PRINCIPAL 101
+
+---
+
 ## DRY: Don't Repeat Yourself
 
 ^ one i'd say that's hogwash.
@@ -242,11 +253,23 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-~~ image of login & create account screens, side by side ~~
+![left|100%](login_activity.png)
+![right|100%](sign_up_activity.png)
 
 ---
 
-~~ image of login & create account screens, side by side, except with red circles on differences ~~
+![left|100%](login_activity_marked_1.png)
+![right|100%](sign_up_activity_marked_1.png)
+
+---
+
+![left|100%](login_activity_marked_2.png)
+![right|100%](sign_up_activity_marked_2.png)
+
+---
+
+![left|100%](login_activity_marked_3.png)
+![right|100%](sign_up_activity_marked_3.png)
 
 ^ these screens ended up having a lot of differences which would have been far easier to deal
 ^ with as layout code rather than logic statements.
@@ -255,7 +278,7 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-~~ clip or screenshot of LoginView class ~~
+![fit](LoginView_java.png)
 
 ^ which, as it happens, is guideline number 3
 
@@ -272,7 +295,7 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-~~ image of the Error View, exposed ~~
+![100%](error_view.png)
 
 ^ here's an example of a view class that is in practically every every
 ^ activity layout of our app
@@ -289,14 +312,22 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-~~ image of the wifi & bluetooth screens, in both portrait and landscape ~~
+![left|fit](bluetooth_portrait.png)
+![right|fit](wifi_portrait.png)
 
 ^ for example, here's a view that gets repeated a few times.
+
+---
+
+![left|fit](bluetooth_landscape.png)
+![right|fit](wifi_landscape.png)
+
 ^ that i wanted to resize nicely for different views.
 
 ---
 
-~~ snippet of styling code for the imageView ~~
+![left|fit](image_view_style_portrait.png)
+![right|fit](image_view_style_land.png)
 
 ^ I ended up using different styles for the landscape and portrait layouts
 ^ but that defined as the same style, that i can then apply to each of these
@@ -304,14 +335,14 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-~~ image of imageView with style applied ~~
+![100%](image_view_large.png)
 
 ^ sweet. now i've got less code to worry with and it'll be easy to change a style if this every changes.
 ^ so that just about wraps up any code that you may need or want for views.
 
 ---
 
-^ now you'll notice that i haven't mentioned fragments yet.
+^ you may have noticed that i haven't mentioned fragments yet.
 ^ that's because i don't really need them.
 ^ i try to make it a point not to need them.
 ^ which is android app dev guideline number 4
@@ -339,17 +370,28 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-~~ image of convo with kasra ~~
-
-^ # split out convo into pieces #
+![150%](kasra_convo_2.png)
 
 ---
 
+![150%](kasra_convo_3.png)
+
+---
+
+^ ![150%](kasra_convo_4.png)
+
+^ ---
+
 ^ raise your hand if you've ever had a conversation
 ^ or run into a similar bug with fragments before?
+
 ^ # pause to let people raise their hands #
 ^ now look around you.  let's pause for moment, a sad moment,
 ^ to just feel sad about fragments.
+
+---
+
+#💧🌹🌹🌹🌹
 
 ^ # moment of sadness for how sad fragments are #
 
@@ -410,7 +452,7 @@ protected void onConfigurationChanged(Configuration config) {
 # Android App Dev Guideline #5
 
 ## Never override configuration changed.*
-### * for view code
+#### * for view code
 
 ^ that being said, i'm sure that there's some rational reason for overriding
 ^ on config changed for non view or state related things. this guideline doesn't
@@ -455,10 +497,6 @@ protected void onConfigurationChanged(Configuration config) {
 
 ---
 
-~~ image of funny gif?  big red NO sign? ~~
-
----
-
 # Android App Dev Guideline #7
 
 ^ so the last guideline
@@ -467,7 +505,7 @@ protected void onConfigurationChanged(Configuration config) {
 
 --- 
 
-~~ image of Electric Objects Home page, with dev tools pulled showing ~~
+![fit](web_inspector.png)
 
 ^ when you're developing for the web
 ^ depending on what you're doing of course, 
@@ -477,7 +515,8 @@ protected void onConfigurationChanged(Configuration config) {
 
 ---
 
-~~ image of phone in portrait, then in landscape ~~
+![left|100%](portrait.png)
+![right|100%](landscape.png)
 
 ^ or turn over.
 
@@ -485,14 +524,14 @@ protected void onConfigurationChanged(Configuration config) {
 
 # Android App Dev Guideline #7
 
-## Embrace state machines; every Activity is a State Machine
+## Embrace state machines
 
 ^ # read guideline out loud #
 ^ so you may be thinking to yourself, what is a state machine
 
 ---
 
-~~ image, simple diagram of a state machine ~~
+![100%](simple_state_machine.png)
 
 ^ basically, a state machine is an object
 ^ where the functions available to be preformed are relative to what state
@@ -516,11 +555,13 @@ protected void onConfigurationChanged(Configuration config) {
 
 ---
 
-~~ some code from the bluetooth hardware adapter fragment thing ~~
+![100%](bluetooth_state_machine.png)
 
 ---
 
-# A Pirate's Android App Dev Guidelines
+![100%](bluetooth_state_machine_in_action.png)
+
+---
 
 - There is a one to one correspondence between a wireframe screen and an Activity
 - Every Activity has its own layout file
@@ -528,16 +569,20 @@ protected void onConfigurationChanged(Configuration config) {
 - Fragments are not simple.  Don't use fragments.*
 - Never override configuration changed.*
 - Retain nothing but state (and hardware adapters)
-- Embrace state machines; every Activity is a State Machine
+- Embrace state machines
 
 ---
 
-~~ image of Jack Sparrow, but why is all the rum gone? ~~
+
+# Lisa Neigut
+##[fit] work @electricobjects
+##[fit] me on the internet, @niftynei
+
+![right|100%](eo_logo.png)
+
+---
 
 ## ~thank you~
+![right|100%](eo_logo.png)
 
 ---
-
-# LiSa NeIgUt
-## Work: @electricobjects
-## Live: @niftynei
