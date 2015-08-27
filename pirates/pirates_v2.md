@@ -2,14 +2,32 @@
 # Android Development 
 ## A Pirate's __CODE__ 
 
+^ - hello!
+^ - today: talk about a code for app dev
+
+---
+
+![fit](let_me_explain_you.jpg)
+
+^ it's not that kind of code
+^ and if you've seen the movie... you already know that
+
+---
+
+![fit](guidelines.gif)
+
+^ you know they're more like guidelines anyway
+^ so! [ with GUSTO ]
+^ this talk was (appropriately) named:
+
 ---
 
 # Android Development 
 ## A Pirate's __Guidelines__
 
---- 
+---
 
-#[fit] Where did these come from?
+# Where did these come from?
 
 ^ so i started at Electric Objects in January
 ^ i started where, i'm sure most of us end up every once in a while:
@@ -20,7 +38,8 @@
 
 ---
 
-# HOW DO I START AN ANDROID APP?
+# Where did these come from?
+## How Do I Start An Android App?
 
 ^ um.  
 ^ # awkward pause #
@@ -48,7 +67,7 @@
 
 ---
 
-# HOW DO I MAP THESE MOCK UPS TO ANDROID 'PIECES'?
+# How do I map these mock ups to Android 'Pieces'?
 
 ---
 
@@ -75,7 +94,6 @@
 
 ---
 
-^ there's nothing wrong with this, really.
 ^ it seemed to work ok, but at some point i think we started running into some problems
 ^ the app grew in size, we did a big redeisgn, one that added tablet layouts
 ^ by the time I left Etsy, when you were adding a new feature to the app
@@ -93,19 +111,19 @@
 ![left|100%](activities.png)
 ![right|fit](wireframe_set_fragmented.png)
 
-^ and in the process created my first "Android App Dev Guideline"
+^ and in the process created my first "Pirate Guideline"
 
 ---
 
-# Android App Dev Guideline #1
-
----
-
-# Android App Dev Guideline #1
-## There is a one to one correspondence between a wireframe screen and an Activity
+# Pirate Guideline #1
 
 ![left|100%](activities.png)
 ![right|fit](wireframe_set_fragmented.png)
+
+---
+
+# Pirate Guideline #1
+## There is a one to one correspondence between a wireframe screen and an Activity
 
 ^ what's nice about this?
 
@@ -113,15 +131,18 @@
 
 # Super easy to get started writing a new application
 
-^ done, no more thinking. 
-^ once the designer is done, i've got my blueprint, now just to build the house.
+---
+
+![100%](wireframe_set.png)
+
+^ so now this beautiful mock up that luke made
 
 ---
 
-![left|fit](star_trek_blueprints.jpg)
-![right|fit](wireframe_set.png)
+![fit](star_trek_blueprints.jpg)
 
-^ okay, so you're ready to get started making your app.
+^ begins to look a whole lot more like a blueprint. winning
+^ great! let's get started.
 
 ---
 
@@ -182,7 +203,11 @@ setContentView(R.layout.activity_generic.xml);
 ---
 
 `luke: just one thing`
-`luke: the user needs a way to logout from the success screen`
+`luke: *explains how someone could get stuck*`
+
+---
+
+`luke: we need a logout button`
 
 ---
 
@@ -191,18 +216,19 @@ setContentView(R.layout.activity_generic.xml);
 
 ---
 
-`lisa: /me thinks furiously`
-
----
-
 `lisa: /me prepares diatribe on the Android Back Button`
 
 ---
 
-`lisa: /me realizes she is vastly outnumber by iOS devices`
+`lisa: /me realizes she is vastly outnumbered by iOS devices`
 
 ---
 
+`lisa: /me thinks furiously`
+
+---
+
+^ HMMMMMMMM.
 ^ # look left.  look right. (furtively) #
 
 ---
@@ -221,15 +247,17 @@ SuccessActivity.java
 setContentView(R.layout.activity_slightly_less_generic.xml);
 ```
 
----
-
 ^ and that's how i came up with my second guideline
 
-# Android App Dev Guideline #2
+---
+
+# Pirate Guideline #2
+
+![](bkg_2.png)
 
 ---
 
-# Android App Dev Guideline #2
+# Pirate Guideline #2
 ## Every Activity has its own layout file
 
 ^ which, in practice, looks like this:
@@ -246,6 +274,7 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
+# PRGRAMMING BEST PRACTICES PRINCIPAL 101
 ## DRY: Don't Repeat Yourself
 
 ^ one i'd say that's hogwash.
@@ -257,6 +286,13 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ^ now, there's one exception to this rule in the Electric Objects app
 ^ that I wish i had followed my own advice on.
+
+---
+
+![left|100%](login_activity.png)
+![right|100%](sign_up_activity.png)
+
+^ but as i was coding it, i started to see a bunch of differences
 ^ that's the LoginActivity.java
 
 ---
@@ -299,11 +335,11 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-# Android App Dev Guideline #3
+# Pirate Guideline #3
 
 ---
 
-# Android App Dev Guideline #3
+# Pirate Guideline #3
 ## Reusable View code belongs in a View class
 
 ^ if you've got view code that you want to use again, put it in a view class.
@@ -320,10 +356,16 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-# Android App Dev Guideline #3A
-## Reusable View attributes belong in a style
+# PRGRAMMING BEST PRACTICES PRINCIPAL 101
 
-^ you can get away with some pretty cool, flexible view code with some creative styling.
+^ which, as it happens, fits another programming best principles practice thing
+
+---
+
+# PRGRAMMING BEST PRACTICES PRINCIPAL 101
+## Favor composition over inheritance
+
+^ talk some about using the error view.
 
 ---
 
@@ -341,6 +383,13 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
+![170%](image_view_large.png)
+
+^ sweet. now i've got less code to worry with and it'll be easy to change a style if this every changes.
+^ so i'd say there's a corollary to guideline 3...
+
+---
+
 ![left|fit](image_view_style_portrait.png)
 ![right|fit](image_view_style_land.png)
 
@@ -350,30 +399,30 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-![170%](image_view_large.png)
+# Pirate Guideline #3A
+## Reusable View attributes belong in a style
 
-^ sweet. now i've got less code to worry with and it'll be easy to change a style if this every changes.
-^ so that just about wraps up any code that you may need or want for views.
+^ you can get away with some pretty cool, flexible view code with some creative styling.
 
 ---
 
 ^ you may have noticed that i haven't mentioned fragments yet.
 ^ that's because i don't really need them.
 ^ i try to make it a point not to need them.
-^ which is android app dev guideline number 4
+^ which is Pirate Guideline number 4
 
 ---
 
-# Android App Dev Guideline #4
+# Pirate Guideline #4
 
 ---
 
-# Android App Dev Guideline #4
+# Pirate Guideline #4
 ## Fragments are not simple.  Don't use fragments.*
 
 ---
 
-# Android App Dev Guideline #4
+# Pirate Guideline #4
 ## Fragments are not simple.  Don't use fragments.*
 
 #### *unless it is absolutely necessary
@@ -414,57 +463,73 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-
-# Android App Dev Guideline #5
-
-^ so the next guideline
+^ the next guideline
 ^ actually the next several guidelines
 ^ really come from a debates we used to have at Etsy
 ^ about the best way to handle rotation in an app
 
 ---
 
-^ at etsy, it was not uncommon to see something like this in your activty code
-^ it's possible they've moved away from this these days, but also possible not
-
 ```java
-@Override
-protected void onConfigurationChanged(Configuration config) {
- ...
- \\ usually something way hacky
- ...
-}
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+      super.onConfigurationChanged(newConfig);
+  }
 ```
+
+^ during my time at etsy, 
+^ it was not uncommon to see something like this in your activty code
 
 ---
 
+```java
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+      super.onConfigurationChanged(newConfig);
+      \\ ~~something real hacky~~
+  }
+```
+
 ^ when we did this we ended up with a lot of weird bugs.
+
+---
+
+- languages not changing correctly
+
+---
+
+- languages not changing correctly
+- views not resizing properly
+
+---
 
 - languages not changing correctly
 - views not resizing properly
 - strange invocations to .onSaveInstanceState() in `onConfigurationChanged`
 
----
-
 ^ i sum these problems up this way:
+
+---
 
 - BUGGY
 - HARD TO TEST
 - HARD TO FIX
 
+---
+
+# Pirate Guideline #5
+
+---
+
+# Pirate Guideline #5
+
+## Never override configuration changed.*
+
 ^ i don't think most people do this, but i don't think it's a bad guideline to have either way.
 
 ---
 
-# Android App Dev Guideline #5
-
-## Never override configuration changed.*
-
-^ so that's why it's number 5
-
----
-
-# Android App Dev Guideline #5
+# Pirate Guideline #5
 
 ## Never override configuration changed.*
 #### * for view code
@@ -479,16 +544,36 @@ protected void onConfigurationChanged(Configuration config) {
 setRetainState(true);
 ```
 
----
-
-# Android App Dev Guideline #6
-
-^ the next guideline is closely related to never override configuration changed
-^ and honestly, has more to do with fragments than anything
+^ [intro]
+^ (if you're not using fragments, this won't apply to you)
+^ but if you are...
+^ this suddenly becomes a bigger question
 
 ---
 
-# Android App Dev Guideline #6
+```java
+setRetainState(true);
+```
+How well do you *really* know the Activity Lifecycle?
+
+^ as soon as you turn this one on, i think you'll find yourself questioning how well
+^ you really know your activity lifecycle. the answer is probably not as well as you think.
+
+^ disclaimer, it's been a while since i've used fragment
+^ so i'm a bit rusty as to why this is such a horrid idea.
+^ and honestly i do use it a decent amount with headless fragments
+
+---
+
+
+---
+
+# Pirate Guideline #6
+
+
+---
+
+# Pirate Guideline #6
 
 ## Retain nothing but state (and hardware adapters)
 
@@ -498,27 +583,6 @@ setRetainState(true);
 ^ my biggest problem with this one had to do with testability
 
 ---
-
-- How well do you really know your Android Activity Lifecycle?
-
-^ as soon as you turn this one on, i think you'll find yourself questioning how well
-^ you really know your activity lifecycle. the answer is probably not as well as you think.
-
----
-
-- HARD TO TEST
-
-^ retained fragments are hard to test;
-^ and since they're hard to test, they're hard to find bugs with, which means they're also hard to fix.
-
----
-
-- HARD TO TEST
-- HARD TO FIX
-
----
-
-# Android App Dev Guideline #7
 
 ^ so the last guideline
 ^ is really a reflection of all the hardware adapters that i've had to deal with.
@@ -543,7 +607,15 @@ setRetainState(true);
 
 ---
 
-# Android App Dev Guideline #7
+# Pirate Guideline #7
+
+![left|100%](portrait.png)
+![right|100%](landscape.png)
+
+
+---
+
+# Pirate Guideline #7
 
 ## Embrace state machines
 
@@ -571,8 +643,9 @@ setRetainState(true);
 
 ---
 
-^ these come in handy when using hardware adapters, which sometimes you put into fragments
-^ that can then be retained.
+^ these come in handy, especially when dealing with large objects that have to be retained
+^ across activity re-creates
+^ like hardware adapters
 
 ---
 
@@ -584,7 +657,8 @@ setRetainState(true);
 
 ---
 
-# Android App Dev __Guidelines__
+# Android Development 
+## A Pirate's __Guidelines__ 
 
 ---
 
@@ -598,7 +672,6 @@ setRetainState(true);
 
 ---
 
-
 # Lisa Neigut
 ##[fit] work @electricobjects
 ##[fit] me on the internet, @niftynei
@@ -609,5 +682,3 @@ setRetainState(true);
 
 ## ~thank you~
 ![right|100%](eo_logo.png)
-
----
