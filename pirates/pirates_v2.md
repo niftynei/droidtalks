@@ -556,34 +556,71 @@ setRetainState(true);
 ```
 How well do you *really* know the Activity Lifecycle?
 
-^ as soon as you turn this one on, i think you'll find yourself questioning how well
-^ you really know your activity lifecycle. the answer is probably not as well as you think.
-
 ^ disclaimer, it's been a while since i've used fragment
 ^ so i'm a bit rusty as to why this is such a horrid idea.
 ^ and honestly i do use it a decent amount with headless fragments
 
 ---
 
+^ there is one thing that you should retain!
+^ and that is the state of the activity as it was
+^ when it was interrupted.
+^ there's a real nice method you can use for that
+
+---
+
+```java
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+      super.onSaveInstanceState(outState);
+      // save my state!
+    }
+```
+
+^ really, anything that you're saving, should be saved here.
+^ you can get real fancy about how you do this (see next)
+^ but do it here. here. here.
 
 ---
 
 # Pirate Guideline #6
 
+## Retain nothing but state*
 
----
-
-# Pirate Guideline #6
-
-## Retain nothing but state (and hardware adapters)
-
-^ basically if you're not using fragments for view code
-^ and since if you're following guideline FOUR, and not using fragments
+^ basically if you're following guideline FOUR and not using fragments for view code
 ^ this guideline probably doesn't much apply to you.
-^ my biggest problem with this one had to do with testability
+^ tho everyone should be saving their state
 
 ---
 
+# Pirate Guideline #6
+
+## Retain nothing but state*
+
+#### *and hardware adapters
+
+^ there are instances though where there are bigger objects that you need to retain
+^ across an activity re-creation
+^ which leads to one caveat with this rule.
+
+---
+
+# CAVEAT: 
+
+---
+
+# CAVEAT: 
+## headless fragments
+
+^ a headless fragment is one that is retained 
+^ across activity saveinstance states.
+^ super invaluable for hardware adapters
+
+---
+
+![](headless_fragments.gif)
+
+^ [ pause a beat ]
 ^ so the last guideline
 ^ is really a reflection of all the hardware adapters that i've had to deal with.
 ^ and the shift in mentality that i had to make from doing web development
@@ -666,8 +703,8 @@ How well do you *really* know the Activity Lifecycle?
 - Every Activity has its own layout file
 - Reusable View code belongs in a View class
 - Fragments are not simple.  Don't use fragments.*
-- Never override configuration changed.*
-- Retain nothing but state (and hardware adapters)
+- Never override configuration changed*
+- Retain nothing but state*
 - Embrace state machines
 
 ---
