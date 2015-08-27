@@ -350,7 +350,7 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-![100%](image_view_large.png)
+![170%](image_view_large.png)
 
 ^ sweet. now i've got less code to worry with and it'll be easy to change a style if this every changes.
 ^ so that just about wraps up any code that you may need or want for views.
@@ -475,6 +475,12 @@ protected void onConfigurationChanged(Configuration config) {
 
 ---
 
+```java
+setRetainState(true);
+```
+
+---
+
 # Android App Dev Guideline #6
 
 ^ the next guideline is closely related to never override configuration changed
@@ -546,7 +552,10 @@ protected void onConfigurationChanged(Configuration config) {
 
 ---
 
-![100%](simple_state_machine.png)
+# A State Machine
+- States are explicitly defined
+- Can only do certain things in each state
+- Where you can go next depends on where you are now
 
 ^ basically, a state machine is an object
 ^ where the functions available to be preformed are relative to what state
@@ -556,12 +565,9 @@ protected void onConfigurationChanged(Configuration config) {
 
 ---
 
-^ or in other words...
+![100%](simple_state_machine.png)
 
-# A State Machine
-- States are explicitly defined
-- Can only do certain things in each state
-- Where you can go next depends on where you are now
+^ or in other words...
 
 ---
 
@@ -570,11 +576,15 @@ protected void onConfigurationChanged(Configuration config) {
 
 ---
 
-![100%](bluetooth_state_machine.png)
+![150%](bluetooth_state_machine.png)
 
 ---
 
-![100%](bluetooth_state_machine_in_action.png)
+![150%](bluetooth_state_machine_in_action.png)
+
+---
+
+# Android App Dev __Guidelines__
 
 ---
 
