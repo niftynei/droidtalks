@@ -1,16 +1,20 @@
 
 # Android Development 
-## A Pirate's __CODE__ 
+## The Pirate's __CODE__ 
 
-^ - hello!
-^ - today: talk about a code for app dev
+^ hello! [intro?]
+^ today: talk about a code for app dev
+^ just so that every one is clear. 
+^ by codes i'm not talking about programming codes.
 
 ---
 
 ![fit](let_me_explain_you.jpg)
 
-^ it's not that kind of code
-^ and if you've seen the movie... you already know that
+^ it's codes as in rules 
+^ laws that we all are bound by
+^ as members of the android community
+^ well. if you've seen the
 
 ---
 
@@ -23,7 +27,7 @@
 ---
 
 # Android Development 
-## A Pirate's __Guidelines__
+## The Pirate's __Guidelines__
 
 ---
 
@@ -63,6 +67,11 @@
 ---
 
 ^ Ok, I've got some designs, so clearly we're not at square one.
+
+---
+
+## How Do I Start An Android App?
+
 ^ so let's refine the question a little bit.
 
 ---
@@ -165,6 +174,12 @@ setContentView(R.layout.activity_generic.xml);
 SuccessActivity.java
 setContentView(R.layout.activity_generic.xml);
 ```
+
+---
+
+![left|fit](okay_activity.png)
+![right|fit](success_activity.png)
+
 ^ so far so good. 
 ^ the success message is just an image anyways, screw i18n
 ^ both of them have buttons. 
@@ -212,7 +227,14 @@ setContentView(R.layout.activity_generic.xml);
 ---
 
 ![100%](success_activity.png)
+
+^ what luke means is that we need to take a view that looks like this
+
+---
+
 ![100%](success_activity_logout.png)
+
+^ and make it look like this
 
 ---
 
@@ -264,8 +286,12 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
+![fit](activity_list.png)
+
+---
+
 ^ i'm sure some of you are thinking, lisa you're daft.
-^ which is totally true.
+^ (which is totally true.)
 ^ what about this other, more general programming best practices principle
 
 ---
@@ -278,28 +304,104 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 ## DRY: Don't Repeat Yourself
 
 ^ one i'd say that's hogwash.
-^ two, i'd say that's it's more like a guideline than a hard and fast rule.
-^ and that if you've got view code that you're repeating
-^ that's where my next guideline comes in
+^ two, if you've got view code that you're repeating.
+^ maybe there's something else you can do
+
+---
+
+^ which, as it happens, is guideline number 3
+
+---
+
+# Pirate Guideline #3
+
+---
+
+# Pirate Guideline #3
+## Reusable View code belongs in a View class
+
+^ if you've got view code that you want to use again, put it in a view class.
+
+---
+
+![100%](error_view.png)
+
+^ for example, here's a view that is used in practically every single screen of our app.
+^ there's a decent amount of code that goes into making an error view work nicely
+^ so if you encapsulate that into a separate class, it becomes a lot easier to reuse
+
+---
+
+![fit](composed_error.png)
+
+---
+
+# PRGRAMMING BEST PRACTICES PRINCIPAL 101
+
+^ which, as it happens, fits another programming best principles practice thing
+
+---
+
+# PRGRAMMING BEST PRACTICES PRINCIPAL 101
+## Favor composition over inheritance
+
+---
+
+![left|fit](bluetooth_portrait.png)
+![right|fit](wifi_portrait.png)
+
+^ sometimes it doesn't even to be at the view level.
+^ you can get away with doing much less work.
+^ take these two screens from our setup app
+^ they're practically cousins
+
+---
+
+![left|fit](bluetooth_landscape.png)
+![right|fit](wifi_landscape.png)
+
+^ that i wanted to resize nicely for different views.
+
+---
+
+![170%](image_view_large.png)
+
+^ this is just a simple imageview, with a custom style applied.
+
+---
+
+![left|fit](image_view_style_portrait.png)
+![right|fit](image_view_style_land.png)
+
+^ there are different styles for the landscape and portrait layouts
+^ but that defined as the same style, that i can then apply to each of these
+^ generic ImageViews
+
+---
+
+# Pirate Guideline #3A
+## Reusable View attributes belong in a style
+
+^ you can get away with some pretty cool, flexible view code with some creative styling.
 
 ---
 
 ^ now, there's one exception to this rule in the Electric Objects app
 ^ that I wish i had followed my own advice on.
+^ when i first started out these screens looked really similar
 
 ---
 
 ![left|100%](login_activity.png)
 ![right|100%](sign_up_activity.png)
 
-^ but as i was coding it, i started to see a bunch of differences
 ^ that's the LoginActivity.java
 
 ---
 
 ![fit](LoginView_java.png)
 
-^ for the login activity, i condensed two views, and put a lot of the logic into a single class
+^ i condensed the two mock ups, and put a lot of the logic into a single class
 ^ a single LoginView
 
 ---
@@ -324,111 +426,17 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 ![left|100%](login_activity_marked_3.png)
 ![right|100%](sign_up_activity_marked_3.png)
 
-^ these screens ended up having a lot of differences which would have been far easier to deal
-^ with as layout code rather than logic statements.
-^ there was one redeeming quality to this screen, and that was my next guideline
-^ the majority of the branching logic for views on this screen is wrapped up in a single view class
+^ far easier to do as layout than logic statements
 
 ---
 
-^ which, as it happens, is guideline number 3
-
----
-
-# Pirate Guideline #3
-
----
-
-# Pirate Guideline #3
-## Reusable View code belongs in a View class
-
-^ if you've got view code that you want to use again, put it in a view class.
-
----
-
-![100%](error_view.png)
-
-^ here's an example of a view class that is in practically every every
-^ activity layout of our app
-
-^ there's a corollary to this rule.  sometimes you can get away without writing a view class
-^ for repeated view code
-
----
-
-# PRGRAMMING BEST PRACTICES PRINCIPAL 101
-
-^ which, as it happens, fits another programming best principles practice thing
-
----
-
-# PRGRAMMING BEST PRACTICES PRINCIPAL 101
-## Favor composition over inheritance
-
-^ talk some about using the error view.
-
----
-
-![left|fit](bluetooth_portrait.png)
-![right|fit](wifi_portrait.png)
-
-^ for example, here's a view that gets repeated a few times.
-
----
-
-![left|fit](bluetooth_landscape.png)
-![right|fit](wifi_landscape.png)
-
-^ that i wanted to resize nicely for different views.
-
----
-
-![170%](image_view_large.png)
-
-^ sweet. now i've got less code to worry with and it'll be easy to change a style if this every changes.
-^ so i'd say there's a corollary to guideline 3...
-
----
-
-![left|fit](image_view_style_portrait.png)
-![right|fit](image_view_style_land.png)
-
-^ I ended up using different styles for the landscape and portrait layouts
-^ but that defined as the same style, that i can then apply to each of these
-^ generic ImageViews
-
----
-
-# Pirate Guideline #3A
-## Reusable View attributes belong in a style
-
-^ you can get away with some pretty cool, flexible view code with some creative styling.
-
----
 
 ^ you may have noticed that i haven't mentioned fragments yet.
 ^ that's because i don't really need them.
 ^ i try to make it a point not to need them.
-^ which is Pirate Guideline number 4
 
----
-
-# Pirate Guideline #4
-
----
-
-# Pirate Guideline #4
-## Fragments are not simple.  Don't use fragments.*
-
----
-
-# Pirate Guideline #4
-## Fragments are not simple.  Don't use fragments.*
-
-#### *unless it is absolutely necessary
-
-^ so it's been a while since i've used a fragment for view code.
-^ and i was having trouble remembering why this was such good advice.
+^ it's been a while since i've used a fragment for view code.
+^ and i was having trouble remembering why i avoid them
 ^ then i was talking to a friend of mine, kasra who works at stack exchange.
 ^ i'd like to share with you part of our conversation
 
@@ -444,8 +452,6 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ^ ![150%](kasra_convo_4.png)
 
-^ ---
-
 ^ raise your hand if you've ever had a conversation
 ^ or run into a similar bug with fragments before?
 
@@ -459,7 +465,28 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ^ # moment of sadness for how sad fragments are #
 
-^ that's all i'm going to say about using fragments for view code.
+---
+
+# Pirate Guideline #4
+
+![](roses.png)
+
+^ that's why no fragments is on this list
+
+---
+
+# Pirate Guideline #4
+## Fragments are not simple.  Don't use fragments.*
+
+---
+
+# Pirate Guideline #4
+## Fragments are not simple.  Don't use fragments.*
+
+#### *unless it is absolutely necessary
+
+
+^ that's all i'm want to say about using fragments for view code.
 
 ---
 
