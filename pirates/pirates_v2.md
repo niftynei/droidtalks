@@ -70,7 +70,8 @@
 ^ this new app dev paradigm called 'Fragments'
 ^ the original Etsy Android app looked something like this
 
-~~ image of Android app with Fragments ~~
+![left|100%](fragments_1_to_many.png)
+![right|fit](wireframe_set_fragmented.png)
 
 ---
 
@@ -80,7 +81,8 @@
 ^ by the time I left Etsy, when you were adding a new feature to the app
 ^ this is more or less what our app looked like 
 
-~~ image of Android app with 1:1 Fragment to Activity ratio ~~
+![left|100%](fragments_1_to_1.png)
+![right|fit](wireframe_set_fragmented.png)
 
 ^ hmmmm. # pause #
 ^ when i got to EO, i decided to improve upon this architecture just a bit
@@ -88,7 +90,12 @@
 
 ---
 
+![left|100%](activities.png)
+![right|fit](wireframe_set_fragmented.png)
+
 ^ and in the process created my first "Android App Dev Guideline"
+
+---
 
 # Android App Dev Guideline #1
 
@@ -97,7 +104,8 @@
 # Android App Dev Guideline #1
 ## There is a one to one correspondence between a wireframe screen and an Activity
 
-~~ image of mapping of 1 Activity to 1 mockup ~~
+![left|100%](activities.png)
+![right|fit](wireframe_set_fragmented.png)
 
 ^ what's nice about this?
 
@@ -253,8 +261,17 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
+![fit](LoginView_java.png)
+
+^ for the login activity, i condensed two views, and put a lot of the logic into a single class
+^ a single LoginView
+
+---
+
 ![left|100%](login_activity.png)
 ![right|100%](sign_up_activity.png)
+
+^ but as i was coding it, i started to see a bunch of differences
 
 ---
 
@@ -277,8 +294,6 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 ^ the majority of the branching logic for views on this screen is wrapped up in a single view class
 
 ---
-
-![fit](LoginView_java.png)
 
 ^ which, as it happens, is guideline number 3
 
