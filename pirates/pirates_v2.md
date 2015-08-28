@@ -148,7 +148,7 @@
 
 ---
 
-![fit](star_trek_blueprints.jpg)
+![150%](ship_blueprint.jpg)
 
 ^ begins to look a whole lot more like a blueprint. winning
 ^ great! let's get started.
@@ -244,9 +244,6 @@ setContentView(R.layout.activity_generic.xml);
 
 `lisa: /me realizes she is vastly outnumbered by iOS devices`
 
----
-
-`lisa: /me thinks furiously`
 
 ---
 
@@ -286,7 +283,7 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-![fit](activity_list.png)
+![120%](activity_list.png)
 
 ---
 
@@ -296,11 +293,11 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-# PRGRAMMING BEST PRACTICES PRINCIPAL 101
+# PRGRAMMING BSET PRACTICES PRINCIPAL 101
 
 ---
 
-# PRGRAMMING BEST PRACTICES PRINCIPAL 101
+# PRGRAMMING BSET PRACTICES PRINCIPAL 101
 ## DRY: Don't Repeat Yourself
 
 ^ one i'd say that's hogwash.
@@ -336,13 +333,13 @@ setContentView(R.layout.activity_slightly_less_generic.xml);
 
 ---
 
-# PRGRAMMING BEST PRACTICES PRINCIPAL 101
+# PRGRAMMING BSET PRACTICES PRINCIPAL 101
 
 ^ which, as it happens, fits another programming best principles practice thing
 
 ---
 
-# PRGRAMMING BEST PRACTICES PRINCIPAL 101
+# PRGRAMMING BSET PRACTICES PRINCIPAL 101
 ## Favor composition over inheritance
 
 ---
@@ -736,13 +733,13 @@ How well do you *really* know the Activity Lifecycle?
 
 ---
 
-# Lisa Neigut
-##[fit] work @electricobjects
-##[fit] me on the internet, @niftynei
-
+## ~thank you~
 ![right|100%](eo_logo.png)
 
 ---
 
-## ~thank you~
+# Lisa Neigut
+##[fit] work @electricobjects
+##[fit] me on the internet, @niftynei
+
 ![right|100%](eo_logo.png)
