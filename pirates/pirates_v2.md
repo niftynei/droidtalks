@@ -1,740 +1,1269 @@
+# Gradlin'
 
-# Android Development 
-## The Pirate's __CODE__ 
+## __Pluggin' it in for Build Success__
 
-^ hello! [intro?]
-^ today: talk about a code for app dev
-^ just so that every one is clear. 
-^ by codes i'm not talking about programming codes.
+^ Hello. Good morning Stockholm.  This session we're talking about some strategies for organizing your Gradle build logic (and building plugins!).  
+It turns out that that's a lot of ground to cover in 40 minutes.
 
----
-
-![fit](let_me_explain_you.jpg)
-
-^ it's codes as in rules 
-^ laws that we all are bound by
-^ as members of the android community
-^ well. if you've seen the
+^ Drink up that coffee. Let's learn some Gradle.
 
 ---
 
-![fit](guidelines.gif)
+# Versioning
+## From Project to Plugin
 
-^ you know they're more like guidelines anyway
-^ so! [ with GUSTO ]
-^ this talk was (appropriately) named:
-
----
-
-# Android Development 
-## The Pirate's __Guidelines__
+^ so my plan for today is to take you thru the process of building a plugin 
+^ we'll start in your project's build files and walk you thru how to take build logic
+^ and encapsulate it into a separate plugin
 
 ---
 
-# Where did these come from?
+build.gradle
 
-^ so i started at Electric Objects in January
-^ i started where, i'm sure most of us end up every once in a while:
-^ coming in to take over a project from some consultants
-^ which is to say more or less starting over from scratch
-^ (sorry StartUp Giraffe)
-^ when i got there, i found that myself asking this question:
+```
+android {
+  compileSdkVersion 23
+  buildToolsVersion "23.0000000"
+  
+  defaultConfig {
+    applicationId "neigut.lisa.gradlepractice"
+    minSdkVersion 16
+    targetSdkVersion 21
+    versionCode 200
+    versionName "200.0.1"
+  } 
+}
+```
+
+^ so let's take a look at a (more or less) vanilla android plugin build file
 
 ---
 
-# Where did these come from?
-## How Do I Start An Android App?
+![200%](apk_upload_failed.png)
 
-^ um.  
-^ # awkward pause #
-^ good question.
-^ to be honest, i kind of had no idea.
+^ how many of you have problems with this...
+
+---
+
+```
+* d2b1b18 (origin/master, origin/HEAD) bump version
+...
+* f0f0771 bump app version number
+```
+
+^ or this?
+^ so being a developer, i'd like a better way to deal with updating versions.
+
+
+---
+
+build.gradle
+
+```
+android {
+  compileSdkVersion 23
+  buildToolsVersion "23.0000000"
+  
+  defaultConfig {
+    applicationId "neigut.lisa.gradlepractice"
+    minSdkVersion 16
+    targetSdkVersion 21
+    versionCode lookupVersionCode()
+    versionName lookupVersionName()
+  } 
+}
+```
+
+^ so i'll write a method to look up the version information at runtime.
+
+---
+
+build.gradle
+
+```
+def lookupVersionCode() {
+  return 1
+}
+
+def lookupVersionName() {
+  return "1.0"
+}
+```
+
+^ here's the methods that i'm calling stuff in
+^ so this isn't the best. i still am going to have to go in by hand and manually 
+^ update the numbers. but let's keep going.
+
+---
+
+build.gradle
+
+```
+project.ext.set("versionCode", 1);
+project.ext.set("versionName", "1.0");
+```
+
+^ i'm going to add two project properties on my build.
+^ how gradle project properties 
+
+---
+
+build.gradle
+
+```
+def lookupVersionCode() {
+  return 1
+}
+
+def lookupVersionName() {
+  return "1.0"
+}
+```
+
+^ now we can replace our static versions.
+
+---
+
+build.gradle
+
+```
+def lookupVersionCode() {
+  return project.versionCode
+}
+
+def lookupVersionName() {
+  return project.versionName
+}
+```
+
+^ with the project property lookup.
+^ so in the sake of completeness, it's worth noting that we could stop here.
+
+---
+
+^ gradle has a way of passing this data in via
+^ the command line.
+
+---
+
+```
+./gradlew :project:assemble -PversionCode=10 -PversionName="10"
+```
+
+^ so you could just add them in via the command line every time you run a build.
+^ i wouldn't recommend doing this because it's hard to tell what version you've just shipped
+^ without checking the manifest.
+
+---
+
+## Writing A Task To Bump Versions
+
+^ so let's write our first Gradle Task to that will bump the versions for us.
+
+---
+
+build.java
+
+```java
+project.tasks.create("bumpVersion") {
+  ...
+} 
+```
+
+^ there are a lot of ways to add tasks to a project, but for this example
+^ we're going to use the task object on the gradle project.
+
+^ we're going to create a task called "bumpVersion"
+
+---
+
+build.java
+
+```java
+project.tasks.create("bumpVersion") {
+  doLast {
+    ...
+  }
+} 
+```
+
+^ in this new task, we're going to add a code block to the doLast closure of our new "bumpVersion" task
+^ this is the code that will get executed when we run the task
+
+^ any code we put in this block won't be executed until this task is run
+
+---
+
+build.java
+
+```java
+project.tasks.create("bumpVersion") {
+  doLast {
+    project.versionCode += 1;
+    project.versionName = String.valueOf(project.versionCode + ".0")
+    ...
+  }
+} 
+```
+
+^ then we add the code to increment the version.
 
 --- 
 
-![100%](wireframe_set.png)
-
-^ if you're a lucky android dev, you probably start off with something that looks like this.
-^ mock ups that your designer made.
-^ if you're not lucky, you'll definitely start out with something that looks like this
-
----
-
-![100%](ios_wireframe_set.png)
-
-^ mock ups for an iOS app.
-
----
-
-^ Ok, I've got some designs, so clearly we're not at square one.
-
----
-
-## How Do I Start An Android App?
-
-^ so let's refine the question a little bit.
-
----
-
-# How do I map these mock ups to Android 'Pieces'?
-
----
-
-^ my only other experience with this has been at Etsy
-^ when i started at Etsy, there were only two of us on the Android team
-^ myself, who had never worked as a software developer before
-^ much less written an entire android app.
-^ and our Senior Android Dev Tim, 
-^ who was actually an iOS dev who decided Android was the next big thing
-^ and that Etsy needed to get with it.
-
-![left](lisa_droid.png)
-![right](tim_droid.png)
-
----
-
-^ now tim was probably one of the smartest app dev's i've ever known
-^ he'd done a bunch of reading on Android apps and was really into
-^ this new app dev paradigm called 'Fragments'
-^ the original Etsy Android app looked something like this
-
-![left|100%](fragments_1_to_many.png)
-![right|fit](wireframe_set_fragmented.png)
-
----
-
-^ it seemed to work ok, but at some point i think we started running into some problems
-^ the app grew in size, we did a big redeisgn, one that added tablet layouts
-^ by the time I left Etsy, when you were adding a new feature to the app
-^ this is more or less what our app looked like 
-
-![left|100%](fragments_1_to_1.png)
-![right|fit](wireframe_set_fragmented.png)
-
-^ hmmmm. # pause #
-^ when i got to EO, i decided to improve upon this architecture just a bit
-^ nothing too crazy or revolutionary
-
----
-
-![left|100%](activities.png)
-![right|fit](wireframe_set_fragmented.png)
-
-^ and in the process created my first "Pirate Guideline"
-
----
-
-# Pirate Guideline #1
-
-![left|100%](activities.png)
-![right|fit](wireframe_set_fragmented.png)
-
----
-
-# Pirate Guideline #1
-## There is a one to one correspondence between a wireframe screen and an Activity
-
-^ what's nice about this?
-
----
-
-# Super easy to get started writing a new application
-
----
-
-![100%](wireframe_set.png)
-
-^ so now this beautiful mock up that luke made
-
----
-
-![150%](ship_blueprint.jpg)
-
-^ begins to look a whole lot more like a blueprint. winning
-^ great! let's get started.
-
----
-
-^ so as you do, i start looking for similarities between these mock ups
-^ hmm, these look very similar
-
-![left|fit](okay_activity.png)
-![right|fit](success_activity.png)
-
----
-
-^ so you start building something that looks like this
+build.java
 
 ```java
-OkayActivity.java
-setContentView(R.layout.activity_generic.xml);
-```
-
-```java
-SuccessActivity.java
-setContentView(R.layout.activity_generic.xml);
-```
-
----
-
-![left|fit](okay_activity.png)
-![right|fit](success_activity.png)
-
-^ so far so good. 
-^ the success message is just an image anyways, screw i18n
-^ both of them have buttons. 
-^ less code to maintain, whoo hoo. looking good.
-
---- 
-
-^ then your designer is looking at your app a few days later
-^ and you have a conversation that goes a little something like this
-
----
-
-` luke: hey lisa! 👋`
-
----
-
-`luke: hey lisa! 👋`
-`lisa: hey! 👋🏽`
-
----
-
-`luke: the app's looking really great! 👍🏻`
-
----
-
-`luke: the app's looking really great! 👍🏻`
-`lisa: /me blushes ☺️`
-
----
-
-`luke: just one thing`
-
-^ # pause to let people read it #
-^ # say # stomach starts to drop a bit
-
----
-
-`luke: just one thing`
-`luke: *explains how someone could get stuck*`
-
----
-
-`luke: we need a logout button`
-
----
-
-![100%](success_activity.png)
-
-^ what luke means is that we need to take a view that looks like this
-
----
-
-![100%](success_activity_logout.png)
-
-^ and make it look like this
-
----
-
-`lisa: /me prepares diatribe on the Android Back Button`
-
----
-
-`lisa: /me realizes she is vastly outnumbered by iOS devices`
-
-
----
-
-^ HMMMMMMMM.
-^ # look left.  look right. (furtively) #
-
----
-
-`lisa: /me ctrl-C; ctrl-V`
-
----
-
-```java
-OkayActivity.java
-setContentView(R.layout.activity_generic.xml);
-```
-
-```java
-SuccessActivity.java
-setContentView(R.layout.activity_slightly_less_generic.xml);
-```
-
-^ and that's how i came up with my second guideline
-
----
-
-# Pirate Guideline #2
-
-![](bkg_2.png)
-
----
-
-# Pirate Guideline #2
-## Every Activity has its own layout file
-
-^ which, in practice, looks like this:
-
----
-
-![120%](activity_list.png)
-
----
-
-^ i'm sure some of you are thinking, lisa you're daft.
-^ (which is totally true.)
-^ what about this other, more general programming best practices principle
-
----
-
-# PRGRAMMING BSET PRACTICES PRINCIPAL 101
-
----
-
-# PRGRAMMING BSET PRACTICES PRINCIPAL 101
-## DRY: Don't Repeat Yourself
-
-^ one i'd say that's hogwash.
-^ two, if you've got view code that you're repeating.
-^ maybe there's something else you can do
-
----
-
-^ which, as it happens, is guideline number 3
-
----
-
-# Pirate Guideline #3
-
----
-
-# Pirate Guideline #3
-## Reusable View code belongs in a View class
-
-^ if you've got view code that you want to use again, put it in a view class.
-
----
-
-![100%](error_view.png)
-
-^ for example, here's a view that is used in practically every single screen of our app.
-^ there's a decent amount of code that goes into making an error view work nicely
-^ so if you encapsulate that into a separate class, it becomes a lot easier to reuse
-
----
-
-![fit](composed_error.png)
-
----
-
-# PRGRAMMING BSET PRACTICES PRINCIPAL 101
-
-^ which, as it happens, fits another programming best principles practice thing
-
----
-
-# PRGRAMMING BSET PRACTICES PRINCIPAL 101
-## Favor composition over inheritance
-
----
-
-![left|fit](bluetooth_portrait.png)
-![right|fit](wifi_portrait.png)
-
-^ sometimes it doesn't even to be at the view level.
-^ you can get away with doing much less work.
-^ take these two screens from our setup app
-^ they're practically cousins
-
----
-
-![left|fit](bluetooth_landscape.png)
-![right|fit](wifi_landscape.png)
-
-^ that i wanted to resize nicely for different views.
-
----
-
-![170%](image_view_large.png)
-
-^ this is just a simple imageview, with a custom style applied.
-
----
-
-![left|fit](image_view_style_portrait.png)
-![right|fit](image_view_style_land.png)
-
-^ there are different styles for the landscape and portrait layouts
-^ but that defined as the same style, that i can then apply to each of these
-^ generic ImageViews
-
----
-
-# Pirate Guideline #3A
-## Reusable View attributes belong in a style
-
-^ you can get away with some pretty cool, flexible view code with some creative styling.
-
----
-
-^ now, there's one exception to this rule in the Electric Objects app
-^ that I wish i had followed my own advice on.
-^ when i first started out these screens looked really similar
-
----
-
-![left|100%](login_activity.png)
-![right|100%](sign_up_activity.png)
-
-^ that's the LoginActivity.java
-
----
-
-![fit](LoginView_java.png)
-
-^ i condensed the two mock ups, and put a lot of the logic into a single class
-^ a single LoginView
-
----
-
-![left|100%](login_activity.png)
-![right|100%](sign_up_activity.png)
-
-^ but as i was coding it, i started to see a bunch of differences
-
----
-
-![left|100%](login_activity_marked_1.png)
-![right|100%](sign_up_activity_marked_1.png)
-
----
-
-![left|100%](login_activity_marked_2.png)
-![right|100%](sign_up_activity_marked_2.png)
-
----
-
-![left|100%](login_activity_marked_3.png)
-![right|100%](sign_up_activity_marked_3.png)
-
-^ far easier to do as layout than logic statements
-
----
-
-
-^ you may have noticed that i haven't mentioned fragments yet.
-^ that's because i don't really need them.
-^ i try to make it a point not to need them.
-
-^ it's been a while since i've used a fragment for view code.
-^ and i was having trouble remembering why i avoid them
-^ then i was talking to a friend of mine, kasra who works at stack exchange.
-^ i'd like to share with you part of our conversation
-
----
-
-![150%](kasra_convo_2.png)
-
----
-
-![150%](kasra_convo_3.png)
-
----
-
-^ ![150%](kasra_convo_4.png)
-
-^ raise your hand if you've ever had a conversation
-^ or run into a similar bug with fragments before?
-
-^ # pause to let people raise their hands #
-^ now look around you.  let's pause for moment, a sad moment,
-^ to just feel sad about fragments.
-
----
-
-#💧🌹🌹🌹🌹
-
-^ # moment of sadness for how sad fragments are #
-
----
-
-# Pirate Guideline #4
-
-![](roses.png)
-
-^ that's why no fragments is on this list
-
----
-
-# Pirate Guideline #4
-## Fragments are not simple.  Don't use fragments.*
-
----
-
-# Pirate Guideline #4
-## Fragments are not simple.  Don't use fragments.*
-
-#### *unless it is absolutely necessary
-
-
-^ that's all i'm want to say about using fragments for view code.
-
----
-
-^ the next guideline
-^ actually the next several guidelines
-^ really come from a debates we used to have at Etsy
-^ about the best way to handle rotation in an app
-
----
-
-```java
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-      super.onConfigurationChanged(newConfig);
-  }
-```
-
-^ during my time at etsy, 
-^ it was not uncommon to see something like this in your activty code
-
----
-
-```java
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-      super.onConfigurationChanged(newConfig);
-      \\ ~~something real hacky~~
-  }
-```
-
-^ when we did this we ended up with a lot of weird bugs.
-
----
-
-- languages not changing correctly
-
----
-
-- languages not changing correctly
-- views not resizing properly
-
----
-
-- languages not changing correctly
-- views not resizing properly
-- strange invocations to .onSaveInstanceState() in `onConfigurationChanged`
-
-^ i sum these problems up this way:
-
----
-
-- BUGGY
-- HARD TO TEST
-- HARD TO FIX
-
----
-
-# Pirate Guideline #5
-
----
-
-# Pirate Guideline #5
-
-## Never override configuration changed.*
-
-^ i don't think most people do this, but i don't think it's a bad guideline to have either way.
-
----
-
-# Pirate Guideline #5
-
-## Never override configuration changed.*
-#### * for view code
-
-^ that being said, i'm sure that there's some rational reason for overriding
-^ on config changed for non view or state related things. this guideline doesn't
-^ apply to that.
-
----
-
-```java
-setRetainState(true);
-```
-
-^ [intro]
-^ (if you're not using fragments, this won't apply to you)
-^ but if you are...
-^ this suddenly becomes a bigger question
-
----
-
-```java
-setRetainState(true);
-```
-How well do you *really* know the Activity Lifecycle?
-
-^ disclaimer, it's been a while since i've used fragment
-^ so i'm a bit rusty as to why this is such a horrid idea.
-^ and honestly i do use it a decent amount with headless fragments
-
----
-
-^ there is one thing that you should retain!
-^ and that is the state of the activity as it was
-^ when it was interrupted.
-^ there's a real nice method you can use for that
-
----
-
-```java
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-      super.onSaveInstanceState(outState);
-      // save my state!
+project.tasks.create("bumpVersion") {
+  doLast {
+    project.versionCode += 1;
+    project.versionName = String.valueOf(project.versionCode + ".0")
+    project.android.applicationVariants.all { variant ->
+      variant.mergedFlavor.versionCode project.versionCode
+      variant.mergedFlavor.versionName project.versionName
     }
+  }
+} 
 ```
 
-^ really, anything that you're saving, should be saved here.
-^ you can get real fancy about how you do this (see next)
-^ but do it here. here. here.
+^ finally, we set the version properties dynamically on the android flavors that we're creating.
+^ this makes sure that the android values get set dynamically.  otherwise, the build version numbers
+^ on the android block will stay at what they were when the project was run
 
 ---
 
-# Pirate Guideline #6
+```
+android {
+  compileSdkVersion 23
+  buildToolsVersion "23.0000000"
+  
+  defaultConfig {
+    applicationId "neigut.lisa.gradlepractice"
+    minSdkVersion 16
+    targetSdkVersion 21
+    versionCode project.versionCode
+    versionName project.versionName
+  } 
+}
+```
 
-## Retain nothing but state*
-
-^ basically if you're following guideline FOUR and not using fragments for view code
-^ this guideline probably doesn't much apply to you.
-^ tho everyone should be saving their state
-
----
-
-# Pirate Guideline #6
-
-## Retain nothing but state*
-
-#### *and hardware adapters
-
-^ there are instances though where there are bigger objects that you need to retain
-^ across an activity re-creation
-^ which leads to one caveat with this rule.
+^ bc right now the version values are set to whatever the versions were
 
 ---
 
-# CAVEAT: 
+Caveats:
+
+- `applicationVariants` is only available for `com.android.application` projects
+- All product flavors will have the same `versionCode` and `versionName`
+
+^ there are a few caveats with this: ## READ FROM SCREEN & EXPLAIN ##
 
 ---
 
-# CAVEAT: 
-## headless fragments
+$ ./gradlew tasks
 
-^ a headless fragment is one that is retained 
-^ across activity saveinstance states.
-^ super invaluable for hardware adapters
+```
+Other tasks
+-----------
+bumpVersion
+```
 
----
-
-![](headless_fragments.gif)
-
-^ [ pause a beat ]
-^ so the last guideline
-^ is really a reflection of all the hardware adapters that i've had to deal with.
-^ and the shift in mentality that i had to make from doing web development
-
---- 
-
-![fit](web_inspector.png)
-
-^ when you're developing for the web
-^ depending on what you're doing of course, 
-^ you don't really have to worry too terribly much about maintaining state
-
-^ on android, state is the thing that bites you in the ass every time you sit down.
+^ so now, when we run the gradle tasks command, our new task shows up. huzzah!
+^ and if we run that task and build a new version of our app
 
 ---
 
-![left|100%](portrait.png)
-![right|100%](landscape.png)
+$ ./gradlew bumpVersion assembleDebug
 
-^ or turn over.
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="neigut.lisa.gradlepractice"
+    android:versionCode="2"
+    android:versionName="2.0">
 
----
+```
 
-# Pirate Guideline #7
-
-![left|100%](portrait.png)
-![right|100%](landscape.png)
-
-
----
-
-# Pirate Guideline #7
-
-## Embrace state machines
-
-^ # read guideline out loud #
-^ so you may be thinking to yourself, what is a state machine
+^ the output manifest of that version you built will have a new version code and name!
+^ huzzah!
 
 ---
 
-# A State Machine
-- States are explicitly defined
-- Can only do certain things in each state
-- Where you can go next depends on where you are now
+build.gradle
 
-^ basically, a state machine is an object
-^ where the functions available to be preformed are relative to what state
-^ the object finds itself in, and where the states
-^ are generally ordered, such that the next state you can move to is determined by
-^ the current state you find yourself in.
+```
+project.ext.set("versionCode", 1);
+project.ext.set("versionName", "1.0");
 
----
+android {
+  compileSdkVersion 23
+  buildToolsVersion "23.0000000"
+  
+  defaultConfig {
+    applicationId "neigut.lisa.gradlepractice"
+    minSdkVersion 16
+    targetSdkVersion 21
+    versionCode project.versionCode
+    versionName project.versionName
+  } 
+}
 
-![100%](simple_state_machine.png)
+project.tasks.create("bumpVersion") {
+  doLast {
+    project.versionCode += 1;
+    project.versionName = String.valueOf(project.versionCode + ".0")
+    project.android.applicationVariants.all { variant ->
+      variant.mergedFlavor.versionCode project.versionCode
+      variant.mergedFlavor.versionName project.versionName
+    }
+  }
+} 
+```
 
-^ or in other words...
-
----
-
-^ these come in handy, especially when dealing with large objects that have to be retained
-^ across activity re-creates
-^ like hardware adapters
-
----
-
-![150%](bluetooth_state_machine.png)
-
----
-
-![150%](bluetooth_state_machine_in_action.png)
-
----
-
-# Android Development 
-## A Pirate's __Guidelines__ 
+^ here's what all that code looks like, together in our build.gradle file
 
 ---
 
-- There is a one to one correspondence between a wireframe screen and an Activity
-- Every Activity has its own layout file
-- Reusable View code belongs in a View class
-- Fragments are not simple.  Don't use fragments.*
-- Never override configuration changed*
-- Retain nothing but state*
-- Embrace state machines
+build.gradle **old**
+
+```java
+  defaultConfig {
+    versionCode lookupVersionCode()
+    versionName lookupVersionName()
+    ...
+  }
+```
+
+build.gradle **new**
+
+```java
+  defaultConfig {
+    versionCode project.versionCode
+    versionName project.versionName
+    ...
+  }
+```
+
+^ there's one thing to note: we don't need the lookupVersion() methods anymore
 
 ---
 
-## ~thank you~
-![right|100%](eo_logo.png)
+^ there's one problem with what we've written so far. what happens if we run the bumpVersion task again?
+
+---
+
+$ ./gradlew bumpVersion assembleDebug
+
+^ if i run this again?
+
+---
+
+$ ./gradlew bumpVersion assembleDebug
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="neigut.lisa.gradlepractice"
+    android:versionCode="2"
+    android:versionName="2.0">
+
+```
+
+^ i'll tell you the answer. our version will be the number 2 again.
+^ presumably we're going to want to ship code that is more than just version 2
+
+---
+
+## Saving the State
+
+
+^ we need a place to store the state of the version
+
+---
+
+```
+AndroidApp
+- build.gradle
+- app/
+-- src/
+-- build.gradle
+```
+
+^ this is the typical project structure of an Android project.
+^ let's add another file to hold our state in
+
+---
+
+```
+AndroidApp
+- build.gradle
+- app/
+-- src/
+-- build.gradle
+-- versions.gradle
+```
+
+^ this is just a file name that i made up. i could have called it anything else.
+
+---
+
+versions.gradle
+
+```
+majorVersion=2
+minorVersion=0
+bugFixVersion=0
+```
+
+^ this is what's inside that versions.gradle file.  
+^ you can see that we're currently on version 2.0.0
+
+---
+
+versions.gradle
+
+```
+majorVersion=2
+minorVersion=1
+bugFixVersion=0
+```
+
+^ and here's what the versions file would look like for version 2.1.0
+
+---
+
+just released version: 2.0.0
+
+version currently in testing: 2.1.0
+
+^ here's what those version numbers look like spelled out
+
+---
+
+## Load the State
+
+^ great our state has a place to be saved.
+^ now we need a way to load the state from this file into the gradle project.
+
+---
+
+build.gradle
+
+```
+def String VERSION_FILE_NAME = "versions.gradle"
+```
+
+^ constant for our filename
+
+---
+
+build.gradle
+
+```
+def String VERSION_FILE_NAME = "versions.gradle"
+
+project.ext.set("majorVersion", 0);
+project.ext.set("minorVersion", 0);
+project.ext.set("bugFixVersion", 0);
+```
+
+^ then we 'prepopulate' or go ahead and define the project properties for each of these values
+
+---
+
+build.gradle
+
+```
+loadVersion() {
+  def versionFile = new File(project.projectDir, VERSION_FILE_NAME)
+  versionFile.eachLine() { line ->
+    def (key, value) = line.split("=").collect { it.trim() }
+    if ("majorVersion".equals(key)) {
+      project.majorVersion = Integer.parseInt(value)
+    }
+    ...
+  }
+}
+```
+
+^ here's our method for loading the versions into the project properties
+^ you'd add an if statement for each of the different version numbers.
+
+---
+
+## Increment and Save To Disk
+
+^ ok, we can read the file in.
+^ let's write some methods for writing an incremented number back out to disk
+^ so we can fully save the state for our next run.
+
+---
+
+//TODO:
+- Create 3 tasks (one for each version 'type')
+- Each task increments the appropriate project property
+- Write out the new values to `verisons.gradle`
+
+^ we have 3 things that we need to do for this objective to be achieved.
+
+---
+
+build.gradle
+
+```java
+def VERSIONS = ["majorVersion", "minorVersion", "bugFixVersion"]
+...
+   VERSIONS.each { versionType ->
+      projects.tasks.create(name: "bump$versionType") {
+        doLast {
+          project.ext[versionType] += 1
+          ...
+        }
+      }
+```
+
+^ here, we're creating 3 tasks dynamically, one for each of the version types that we have
+
+---
+
+build.gradle
+
+```java
+def VERSIONS = ["majorVersion", "minorVersion", "bugFixVersion"]
+...
+   VERSIONS.each { versionType ->
+      projects.tasks.create(name: "bump$versionType") {
+        doLast {
+          project.ext[versionType] += 1
+          // write to versions.gradle file
+          // update the applicationVariants values
+        }
+      }
+```
+
+^ there's two more things we need to add to this task: (read from slide)
+
+---
+
+build.gradle
+
+```java
+def VERSIONS = ["majorVersion", "minorVersion", "bugFixVersion"]
+...
+   VERSIONS.each { versionType ->
+      projects.tasks.create(name: "bump$versionType") {
+        doLast {
+          project.ext[versionType] += 1
+          new File(project.projectDir, VERSIONS_FILE_NAME).withWriter { out ->
+            out.write {
+               """majorVersion=${project.majorVersion}
+               minorVersion=${project.minorVersion}
+               bugFixVersion=${project.bugFixVersion}
+               """
+            }
+          }
+          // update the applicationVariants values
+        }
+      }
+```
+
+^ this code writes out our new Version.gradle file
+^ and then we've already seen the updating code above, so i'm not replicating it here.
+
+---
+
+$ ./gradlew tasks
+
+```
+Other tasks
+-----------
+bumpmajorVersion
+bumpminorVersion
+bumpbugFixVersion
+```
+
+^ now when we run gradle tasks, we can see all of the tasks we've just created.
+^ and if we run one of these tasks.
+
+---
+
+$ ./gradlew bump__major__Version
+
+versions.gradle
+
+```java
+majorVersion=3
+minorVersion=0
+bugFixVersion=0
+```
+
+^ we can see the values get updated in our versions file. yes.
+
+---
+
+$ ./gradlew bump__bugFix__Version
+
+versions.gradle
+
+```java
+majorVersion=3
+minorVersion=0
+bugFixVersion=1
+```
+
+^ running a different task increments a different version number. coool
+
+---
+
+AndroidManifest.xml
+
+```xml
+android:versionName="3.0.1"
+```
+
+^ here's what it will look like when we build the project
+
+---
+
+build.gradle
+
+```java
+def VERSIONS = ["majorVersion", "minorVersion", "bugFixVersion"]
+...
+   VERSIONS.each { versionType ->
+      projects.tasks.create(name: "bump$versionType") {
+        doLast {
+          project.ext[versionType] += 1
+          new File(project.projectDir, VERSIONS_FILE_NAME).withWriter { out ->
+            out.write {
+               """majorVersion=${project.majorVersion}
+               minorVersion=${project.minorVersion}
+               bugFixVersion=${project.bugFixVersion}
+               """
+            }
+          }
+          // update the applicationVariants values
+        }
+      }
+```
+
+^ so here again is the code for building all those tasks.
+^ there's one line that i left out
+
+---
+
+build.gradle
+
+```java
+def VERSIONS = ["majorVersion", "minorVersion", "bugFixVersion"]
+afterEvaluate {
+   VERSIONS.each { versionType ->
+      projects.tasks.create(name: "bump$versionType") {
+        doLast {
+          project.ext[versionType] += 1
+          new File(project.projectDir, VERSIONS_FILE_NAME).withWriter { out ->
+            out.write {
+               """majorVersion=${project.majorVersion}
+               minorVersion=${project.minorVersion}
+               bugFixVersion=${project.bugFixVersion}
+               """
+            }
+          }
+          // update the applicationVariants values
+        }
+      }
+```
+
+---
+
+build.gradle
+
+```java
+afterEvaluate {
+  ...
+}
+```
+
+^ this is the afterEvaluate hook
+
+---
+
+```java
+beforeEvaluate { project -> ... }
+
+afterEvaluate { project -> ... }
+```
+
+^ there are two hooks, one for before and after the evaluate stage of a gradle build
+
+---
+
+```java
+beforeEvaluate { project -> 
+  // set up project properties
+  // load the versions from disk
+}
+
+afterEvaluate { project -> 
+  // create tasks to bump versions
+}
+```
+
+^ if we put the logic for our versions code into these hooks
+^ this would be how i would divide it out.
+
+---
+
+^ cool. so that about wraps up our putting together some versioning code.
+^ let's take a quick look at what we've achieved so far
+
+---
+
+Versioning
+1. Stateful versions
+2. Gradle tasks to change the version number
+3. Build server (Jenkins) can easily manage version numbers
+4. Can be checked into source control (Git)
+
+^ READ and EXPLAIN
+
+---
+
+^ but then your project manager has a great idea. and they come to you and say...
+
+---
+
+## Let's Make A New App
+
+^ let's consider our options of how to reuse this code.
+
+---
+
+Options
+
+- Ctrl-C, Ctrl-V
+
+^ our first option!
+^ i leave this as an exercise for the audience. ;)
+
+---
+
+Options
+
+- Ctrl-C, Ctrl-V
+- Share logic via the root project
+
+^ we didn't really talk about the magical root project, but there's a way to write
+^ global gradle code for a multi-project build.
+^ this only works for multi-project builds.
+
+---
+
+Options
+
+- Ctrl-C, Ctrl-V
+- Share logic via the root project
+- Use a Gradle Plugin
+
+^ option 3 is write a reusable and shareable gradle plugin.
+
+---
+
+Options
+
+- Ctrl-C, Ctrl-V
+- __Share logic via the root project__
+- Use a Gradle Plugin
+
+^ let's explore option 2.
+
+---
+
+## Multi-Project Builds
+
+---
+
+```
+AndroidApp
+- build.gradle
+- app/
+-- src/
+-- build.gradle
+```
+
+^ remember our typical build structure for a project.
+^ this is a single project structure.
+^ adding a second project would make our project directory look like this:
+
+---
+
+```
+AndroidApp
+- build.gradle
+- app/
+-- src/
+-- build.gradle
+- app2/
+-- src/
+-- build.gradle
+```
+
+---
+
+```
+AndroidApp
+- build.gradle  (root)
+- app/
+-- src/
+-- build.gradle (app1)
+- app2/
+-- src/
+-- build.gradle (app2)
+```
+
+^ here's how these build files belong to. 
+^ if we move our build logic from the app1 file and into the root file.
+^ we can share it with any other projects in this multi-project build.
+
+---
+
+Versioning Steps
+
+- Add `bumpVersion` tasks
+- Set up project properties
+- Load the versions file
+- Set the variant version
+
+^ before we get into it, lets talk about a few hooks that are available at the root project level
+
+---
+
+Root Project Hooks
+
+- allprojects {}
+- subprojects {}
+- project(':app') {}
+
+^ EXPLAIN WHAT THESE ARE. (all includes root)
+
+---
+
+app/build.gradle
+
+```java
+afterEvaluate { ...  }
+```
+
+^ remember how originally we had an afterEvaluate block in the project build.gradle file
+
+---
+
+app/build.gradle
+
+```java
+afterEvaluate { ... }
+```
+
+build.gradle  (root)
+
+```java
+subprojects { 
+  project.afterEvaluate { ... } 
+}
+```
+
+^ this is how you'd add an afterEvaluate block for every subproject off of the root project
+
+---
+
+Versioning Steps
+
+- **Add `bumpVersion` tasks**
+- Set up project properties
+- Load the versions file
+- Set the variant version
+
+^ let's dynamically generate our bumpVersion tasks now
+
+---
+
+build.gradle   (root)
+
+```java
+def VERSIONS = ['majorVersion', 'minorVersion', 'bugFixVersion']
+subprojects {
+  project.afterEvaluate {
+    // create bump version tasks here, dynamically
+  }
+}
+```
+---
+
+Versioning Steps
+
+- Add `bumpVersion` tasks
+- **Set up project properties**
+- Load the versions file
+- Set the variant version
+
+---
+
+build.gradle   (root)
+
+```java
+def VERSIONS = ['majorVersion', 'minorVersion', 'bugFixVersion']
+subprojects {
+  project.afterEvaluate {
+    // create bump version tasks here, dynamically
+  }
+  project.beforeEvaluate {
+    VERSIONS.each { version -> 
+      project.ext.set(version, 0)
+    }
+  }
+}
+```
+
+^ here, i'm adding a property for each version, initialized as 0
+
+---
+
+Versioning Steps
+
+- Add `bumpVersion` tasks
+- Set up project properties
+- **Load the versions file**
+- Set the variant version
+
+---
+
+build.gradle   (root)
+
+```java
+def VERSIONS = ['majorVersion', 'minorVersion', 'bugFixVersion']
+subprojects {
+  project.afterEvaluate {
+    // create bump version tasks here, dynamically
+  }
+  project.beforeEvaluate {
+    VERSIONS.each { version -> 
+      project.ext.set(version, 0)
+    }
+    loadVersions(project)
+  }
+}
+```
+
+^ after setting the version, we load the versions into the properties
+
+---
+
+Versioning Steps
+
+- Add `bumpVersion` tasks
+- Set up project properties
+- Load the versions file
+- **Set the variant version**
+
+---
+
+app/build.gradle   (app1/app2)
+
+```java
+  defaultConfig {
+    versionCode project.majorVersion * 10 + project.minorVersion // etc
+    versionName project.majorVersion + " " + project.minorVersion // etc
+    // ...
+  }
+```
+
+^ explain slide (using project property to set android plugin property)
+
+---
+
+```
+$ ./gradlew :app:bumpminorVersion :app2:bumpmajorVersion
+```
+
+^ now you can call the version on each of the apps individually
+
+---
+
+```
+$ ./gradlew :app:bumpminorVersion :app2:bumpmajorVersion
+
+$ ./gradlew bumpminorVersion
+```
+
+^ or on every subproject with a single command
+
+---
+
+Options
+
+- Ctrl-C, Ctrl-V
+- Share logic via the root project
+- __Use a Gradle Plugin__
+
+^ so that about wraps up option 2.
+^ lets explore now how we can take this code and pull it up into a gradle plugin
+^ remember, plugin code can be used across apps, in diverse projects
+
+---
+
+## Gradle Plugins
+
+---
+
+### Where can Plugin code live?
+
+---
+
+# Where can Plugin code live?
+- in the project class itself
+- in `buildSrc`
+- as a separate jar
+
+---
+
+```
+AndroidApp
+- build.gradle   (root)
+- app/
+- app2/
+```
+
+^ this is a normal 2 project multiproject gradle build
+^ you can add the buildSrc files to this structure
+^ ## explain a bit about how this makes it easier to debug / run while building.
+
+---
+
+```
+AndroidApp
+- buildSrc/
+- build.gradle   (root)
+- app/
+- app2/
+```
+
+^ you can just manually add a new directory to your project structure
+
+---
+
+- groovy package
+- resources directory with a META-INF folder
+- build.gradle file
+
+![right|100%](plugin_dirs.png)
+
+^ there are three things you need inside of your `buildSrc` folder
+^ ## READ ALOUD ##
+^ let's dig into the groovy code we'll need inside that groovy package
+
+---
+
+- an extension class
+- the plugin class
+
+^ there are two components to the Groovy code of a plugin.
+^ an extension class, that acts like a mega properties object on a project
+^ and a plugin class that applies the extension to the project
+
+---
+
+
+```java
+// Project Property
+project.ext.set("majorVersion", 0)
+
+// Project Extension
+project.extensions.create("appVersion", VersionExtension)
+project.appVersion.majorVersion = 0
+```
+
+^ let's start with extensions.
+^ ## EXPLAIN CODE
+
+---
+
+VersionExtension.groovy
+
+```java
+class VersionExtension {
+  def int majorVersion
+  def int minorVersion
+  def int bugFixVersion
+  // ...
+}
+```
+
+^ i can add some properties to this extension...
+
+---
+
+VersionExtension.groovy
+
+```java
+class VersionExtension {
+  // ...
+  def releaseString() { majorVersion + DOT + minorVersion + DOT + bugFixVersion }
+  def code() { majorVersion * 10**6 + minorVersion * 10**4 + bugFixVersion }
+
+  // 1.4.1
+  // 1040001
+}
+```
+
+^ ... and some handy methods
+
+^ ok, we've basically got our extension more or less constructed. we're missing a few methods, but i think you get the idea
+
+---
+
+VersionsPlugin.groovy
+
+```java
+class VersionPlugin implements Plugin<Project> {
+```
+
+^ the plugin class that implements plugin.
+^ there is only one method that you need to implement for the Plugin inteface
+
+---
+
+VersionsPlugin.groovy
+
+```java
+class VersionPlugin implements Plugin<Project> {
+  void apply(Project project) {
+    \\ plugin set up logic
+  }
+}
+```
+
+---
+
+build.gradle  (root)
+
+```java
+subprojects {
+  project.afterEvaluate { ... }
+}
+```
+
+^ remember how we used to have an after evaluate block in the root project file?
+
+---
+
+build.gradle  (root)
+
+```java
+subprojects {
+  project.afterEvaluate { ... }
+}
+```
+
+VersionsPlugin.groovy
+
+```java
+void apply(Project project) {
+  project.afterEvaluate { ... }
+}
+```
+
+^ now it's applied in the apply method of the plugin
+
+---
+
+VersionsPlugin.groovy
+
+```java
+class VersionPlugin implements Plugin<Project> {
+  void apply(Project project) {
+    project.extensions.create("appVersion", VersionExtension)
+    project.appVersion.loadVersions(project)
+    project.afterEvaluate {
+      VERSIONS.each { version -> 
+        project.tasks.create(name: "bump$version") {
+          doLast {
+            project.appVersion.bump(version)
+            // Write out to file
+            // Update `android` plugin values
+          } 
+        }
+      }
+    } 
+  }
+}
+```
+
+^ ## EXPLAIN THIS
+
+---
+
+## Use your Plugin
+
+^ ok, we've gotten it built. how do we use it in our project build.gradle files?
+
+---
+
+- Expose
+- Apply
+- Use
+
+^ last three steps to using a plugin.
+
+---
+
+Expose
+
+![right|100%](plugin_dirs.png)
+
+---
+
+Expose
+
+buildSrc/resources/META-INF.gradle-plugins/appVersion.properties
+
+```java
+implementation-class=neigut.lisa.gradle.VersionsPlugin
+```
+
+---
+
+
+Apply
+
+app/build.gradle
+
+```
+apply plugin: 'com.android.application'
+apply plugin: 'appVersion'
+```
+
+---
+
+Use
+
+app/build.gradle
+
+```
+android {
+  defaultConfig {
+    versionCode appVersion.code()
+    versionName appVersion.releaseString()
+  }
+}
+```
+
+---
+
+Kevin Grant's Sample Project
+https://github.com/kevinthecity/GradlePluginExample
+
+^ it's worth mentioning that Kevin took this talk that i gave
+^ in DroidCon UK and made a sample app that you can check out.
+^ thanks kevin.
 
 ---
 
@@ -742,4 +1271,9 @@ How well do you *really* know the Activity Lifecycle?
 ##[fit] work @electricobjects
 ##[fit] me on the internet, @niftynei
 
+![right|100%](eo_logo.png)
+
+---
+
+## ~thank you~
 ![right|100%](eo_logo.png)

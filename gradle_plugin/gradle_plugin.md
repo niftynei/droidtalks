@@ -49,7 +49,7 @@ android {
 
 ---
 
-![100%](apk_upload_failed.png)
+![120%](apk_upload_failed.png)
 
 ^ or this?
 ^ so being a developer, i'd like a better way to deal with updating versions.
@@ -1003,7 +1003,7 @@ AndroidApp
 - resources directory with a META-INF folder
 - build.gradle file
 
-![right](plugin_dirs.png)
+![right|100%](plugin_dirs.png)
 
 ^ there are three things you need inside of your `buildSrc` folder
 ^ ## READ ALOUD ##
@@ -1166,6 +1166,12 @@ class VersionPlugin implements Plugin<Project> {
 
 Expose
 
+![right|100%](plugin_dirs.png)
+
+---
+
+Expose
+
 buildSrc/resources/META-INF.gradle-plugins/appVersion.properties
 
 ```java
@@ -1174,11 +1180,6 @@ implementation-class=neigut.lisa.gradle.VersionsPlugin
 
 ---
 
-Expose
-
-![right](plugin_dirs.png)
-
----
 
 Apply
 
