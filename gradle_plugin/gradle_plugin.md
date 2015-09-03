@@ -2,7 +2,7 @@
 
 ## __Pluggin' it in for Build Success__
 
-^ Hello. Good afternoon.  This session we're talking about some strategies for organizing your Gradle build logic (and building plugins!).  
+^ Hello. Good morning Stockholm.  This session we're talking about some strategies for organizing your Gradle build logic (and building plugins!).  
 It turns out that that's a lot of ground to cover in 40 minutes.
 
 ^ Drink up that coffee. Let's learn some Gradle.
@@ -39,20 +39,21 @@ android {
 
 ---
 
+![fit](apk_upload_failed.png)
+
+^ how many of you have problems with this...
+
+---
+
 ```
 * d2b1b18 (origin/master, origin/HEAD) bump version
 ...
 * f0f0771 bump app version number
 ```
 
-^ how many of you have problems with this...
-
----
-
-![120%](apk_upload_failed.png)
-
 ^ or this?
 ^ so being a developer, i'd like a better way to deal with updating versions.
+
 
 ---
 
@@ -239,8 +240,8 @@ android {
     applicationId "neigut.lisa.gradlepractice"
     minSdkVersion 16
     targetSdkVersion 21
-    versionCode lookupVersionCode()
-    versionName lookupVersionName()
+    versionCode project.versionCode
+    versionName project.versionName
   } 
 }
 ```
@@ -301,8 +302,8 @@ android {
     applicationId "neigut.lisa.gradlepractice"
     minSdkVersion 16
     targetSdkVersion 21
-    versionCode lookupVersionCode()
-    versionName lookupVersionName()
+    versionCode project.versionCode
+    versionName project.versionName
   } 
 }
 
@@ -346,12 +347,36 @@ build.gradle **new**
 
 ---
 
-## Saving the State
+^ there's one problem with what we've written so far. what happens if we run the bumpVersion task again?
 
-^ we have another problem with this task.
+---
+
+$ ./gradlew bumpVersion assembleDebug
+
+^ if i run this again?
+
+---
+
+$ ./gradlew bumpVersion assembleDebug
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="neigut.lisa.gradlepractice"
+    android:versionCode="2"
+    android:versionName="2.0">
+
+```
+
+^ i'll tell you the answer. our version will be the number 2 again.
 ^ presumably we're going to want to ship code that is more than just version 2
 
-^ first we need a place to store that state.
+---
+
+## Saving the State
+
+
+^ we need a place to store the state of the version
 
 ---
 
@@ -374,7 +399,7 @@ AndroidApp
 - app/
 -- src/
 -- build.gradle
--- version.gradle
+-- versions.gradle
 ```
 
 ^ this is just a file name that i made up. i could have called it anything else.
@@ -546,9 +571,11 @@ def VERSIONS = ["majorVersion", "minorVersion", "bugFixVersion"]
 
 ---
 
-build.gradle
+$ ./gradlew tasks
 
 ```
+Other tasks
+-----------
 bumpmajorVersion
 bumpminorVersion
 bumpbugFixVersion
@@ -601,7 +628,7 @@ build.gradle
 
 ```java
 def VERSIONS = ["majorVersion", "minorVersion", "bugFixVersion"]
-afterEvaluate {
+...
    VERSIONS.each { versionType ->
       projects.tasks.create(name: "bump$versionType") {
         doLast {
@@ -619,8 +646,32 @@ afterEvaluate {
       }
 ```
 
+^ so here again is the code for building all those tasks.
+^ there's one line that i left out
 
-^ there's one line that i left out. 
+---
+
+build.gradle
+
+```java
+def VERSIONS = ["majorVersion", "minorVersion", "bugFixVersion"]
+afterEvaluate {
+   VERSIONS.each { versionType ->
+      projects.tasks.create(name: "bump$versionType") {
+        doLast {
+          project.ext[versionType] += 1
+          new File(project.projectDir, VERSIONS_FILE_NAME).withWriter { out ->
+            out.write {
+               """majorVersion=${project.majorVersion}
+               minorVersion=${project.minorVersion}
+               bugFixVersion=${project.bugFixVersion}
+               """
+            }
+          }
+          // update the applicationVariants values
+        }
+      }
+```
 
 ---
 
@@ -1003,7 +1054,7 @@ AndroidApp
 - resources directory with a META-INF folder
 - build.gradle file
 
-![right|100%](plugin_dirs.png)
+![right|fit](plugin_dirs.png)
 
 ^ there are three things you need inside of your `buildSrc` folder
 ^ ## READ ALOUD ##
@@ -1166,7 +1217,7 @@ class VersionPlugin implements Plugin<Project> {
 
 Expose
 
-![right|100%](plugin_dirs.png)
+![right|fit](plugin_dirs.png)
 
 ---
 
@@ -1204,6 +1255,15 @@ android {
   }
 }
 ```
+
+---
+
+Kevin Grant's Sample Project
+https://github.com/kevinthecity/GradlePluginExample
+
+^ it's worth mentioning that Kevin took this talk that i gave
+^ in DroidCon UK and made a sample app that you can check out.
+^ thanks kevin.
 
 ---
 
