@@ -61,19 +61,19 @@
 
 ---
 
-## 3 BUG TYPES
+## **3** BUG TYPES
 ^ i'd like to propose that there are only 3 types of bugs.
 
 ---
 
-## **BUG TYPE 1**
+## BUG TYPE **1**
 ### problems you can see: __OK__
 
 ^ problems that you can see happening on your own device.
 
 ---
 
-## **BUG TYPE 2**
+## BUG TYPE **2**
 ### problems you cannot see: __HARD__
 
 
@@ -81,7 +81,7 @@
 
 ---
 
-## **BUG TYPE 3**
+## BUG TYPE **3**
 ### problems you do not know exist: __IMPOSSIBLE__
 
 ^ but it is impossible to fix a problem that you do not know exists.
@@ -110,9 +110,14 @@
 
 ---
 
-# How to **Deal**
+## Step 0:
+### How to **Deal**
 
-^ i used to be like colbert when i'd get a bug report in.
+---
+
+![fit](hide.gif)
+
+^ this used to be me.
 ^ then i worked with a really great developer. wed get a bug report, and id go all turtle
 and hes all... excited.
 
@@ -134,7 +139,7 @@ and hes all... excited.
 
 ---
 
-#TRUST
+#**TRUST**
 
 ^ and two, software crashes. it's a fact of life. not everyone seems to understand this, and a large part of your perception as a developer in your organization is built on the trust that people have in the code that you write. part of that trust is that you will fix all and any problems that develop. it is your job to build trust with the people that use the software that you write. your job.
 
